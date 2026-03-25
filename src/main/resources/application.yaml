@@ -34,10 +34,7 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
-management:
-  health:
-    mail:
-      enabled: false
+
 
 # Swagger / OpenAPI
 springdoc:
@@ -63,3 +60,16 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiry-hours: ${JWT_EXPIRY_HOURS}
+
+# Actuator config
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
