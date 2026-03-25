@@ -8,12 +8,15 @@ WORKDIR /app
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+
+# Pre-download dependencies (faster rebuilds)
+RUN chmod +x ./mvnw
+RUN ./mvnw dependency:go-offline
+
+# Copy source code
 COPY src ./src
 
-# Ensure mvnw is executable
-RUN chmod +x ./mvnw
-
-# Build the JAR (skip tests to speed up)
+# Build the JAR
 RUN ./mvnw clean package -DskipTests
 
 # ==============================
@@ -22,20 +25,24 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# Copy the JAR from the build stage
+# Install curl (for healthcheck)
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Copy JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port (Internal Port)
+# Expose port
 EXPOSE 8080
 
-# Environment variables (Defaults, can be overridden)
+# REMOVE insecure defaults (keep empty)
 ENV MONGODB_URI=""
 ENV MAIL_USERNAME=""
 ENV MAIL_PASSWORD=""
-ENV ADMIN_USERNAME="admin"
-ENV ADMIN_PASSWORD="admin123"
-ENV FRONTEND_URL="http://localhost:5173"
-ENV JWT_SECRET="your_jwt_secret_key_here"
+ENV ADMIN_USERNAME=""
+ENV ADMIN_PASSWORD=""
+ENV FRONTEND_URL=""
+ENV JWT_SECRET=""
 ENV JWT_EXPIRY_HOURS="24"
-# Run the app
+
+# Run app
 ENTRYPOINT ["java", "-jar", "app.jar"]
