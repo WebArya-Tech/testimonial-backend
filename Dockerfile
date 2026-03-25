@@ -37,7 +37,5 @@ ENV ADMIN_PASSWORD="admin123"
 ENV FRONTEND_URL="http://localhost:5173"
 ENV JWT_SECRET="your_jwt_secret_key_here"
 ENV JWT_EXPIRY_HOURS="24"
-ENV RAZORPAY_KEY_ID="your_razorpay_key_id_here"
-ENV RAZORPAY_KEY_SECRET="your_razorpay_key_secret_here"
 # Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]

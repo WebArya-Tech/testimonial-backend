@@ -66,7 +66,7 @@ public class AuthController {
         }
 
         // Generate JWT
-        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), "ROLE_USER");
 
         AuthResponse response = AuthResponse.builder()
                 .token(token)
