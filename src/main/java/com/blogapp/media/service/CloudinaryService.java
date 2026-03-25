@@ -58,7 +58,7 @@ public class CloudinaryService {
     public void deleteMediaByUrl(String secureUrl) {
         try {
             // URL parse example: https://res.cloudinary.com/demo/image/upload/v123456/astar-testimonial-ask/filename.jpg
-            java.net.URL url = new java.net.URL(secureUrl);
+            java.net.URL url = java.net.URI.create(secureUrl).toURL();
             String urlPath = url.getPath(); 
             String[] parts = urlPath.split("/upload/");
             
