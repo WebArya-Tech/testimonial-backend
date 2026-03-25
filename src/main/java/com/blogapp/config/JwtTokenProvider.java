@@ -21,8 +21,8 @@ public class JwtTokenProvider {
     private final long expiryMs;
 
     public JwtTokenProvider(
-            @Value("${blog.jwt.secret}") String base64Secret,
-            @Value("${blog.jwt.expiry-hours:24}") int expiryHours) {
+            @Value("${app.jwt.secret}") String base64Secret,
+            @Value("${app.jwt.expiry-hours:24}") int expiryHours) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
         this.expiryMs = (long) expiryHours * 60 * 60 * 1000;
     }
