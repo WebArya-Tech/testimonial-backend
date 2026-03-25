@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   # ==============================
-  # Blog Application Service
+  # Testimonial & QnA Application Service
   # ==============================
-  blog-api:
+  testimonial-qna-api:
     build: .
     container_name: astar-testimonial-ask-api-container
     ports:
