@@ -66,9 +66,9 @@ public class OtpServiceImpl implements OtpService {
         otpRepository.save(otpVerification);
 
         // Send email
-        String subject = purpose == OtpPurpose.BLOG_SUBMISSION
-                ? "Your OTP for Blog Submission"
-                : "Your OTP for Blog Subscription";
+        String subject = purpose == OtpPurpose.ADMIN_PASSWORD_RESET
+                ? "Your Admin Password Reset OTP"
+                : "Your Login Verification OTP";
 
         String body = buildOtpEmailBody(rawOtp, purpose);
         emailService.sendEmail(email, subject, body);
@@ -124,9 +124,9 @@ public class OtpServiceImpl implements OtpService {
     }
 
     private String buildOtpEmailBody(String otp, OtpPurpose purpose) {
-        String purposeText = purpose == OtpPurpose.BLOG_SUBMISSION
-                ? "blog submission"
-                : "blog subscription";
+        String purposeText = purpose == OtpPurpose.ADMIN_PASSWORD_RESET
+                ? "admin password reset"
+                : "account login";
 
         return """
                 <html>

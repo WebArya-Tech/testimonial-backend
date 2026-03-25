@@ -49,7 +49,7 @@ springdoc:
     tags-sorter: alpha
 
 # Application Custom Config
-blog:
+app:
   admin:
     username: ${ADMIN_USERNAME}
     password: ${ADMIN_PASSWORD}
@@ -58,22 +58,8 @@ blog:
     expiry-minutes: 10
     max-attempts: 5
     resend-cooldown-seconds: 60
-  pagination:
-    default-page: 0
-    default-size: 10
-    max-size: 50
-  rate-limit:
-    comments-per-minute: 5
-    reactions-per-minute: 10
   frontend:
     url: ${FRONTEND_URL}
-  notification:
-    enabled: false  # Set to true to enable hourly subscriber email notifications
   jwt:
     secret: ${JWT_SECRET}
     expiry-hours: ${JWT_EXPIRY_HOURS}
-
-# Razorpay Configuration
-razorpay:
-  key-id: ${RAZORPAY_KEY_ID:}
-  key-secret: ${RAZORPAY_KEY_SECRET:}

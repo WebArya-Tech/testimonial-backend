@@ -28,13 +28,14 @@ public class JwtTokenProvider {
     }
 
     /**
-     * Generate a JWT containing userId and email.
+     * Generate a JWT containing userId, email, and role.
      */
-    public String generateToken(String userId, String email) {
+    public String generateToken(String userId, String email, String role) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(userId)
                 .claim("email", email)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expiryMs))
                 .signWith(key)
@@ -53,6 +54,23 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
             return claims.getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Extract the role from a valid token.
+     * Returns null if the token is invalid or expired.
+     */
+    public String getRoleFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            return claims.get("role", String.class);
         } catch (JwtException | IllegalArgumentException e) {
             return null;
         }

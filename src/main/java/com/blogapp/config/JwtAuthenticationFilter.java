@@ -1,5 +1,7 @@
 package com.blogapp.config;
 
+import com.blogapp.admin.entity.Admin;
+import com.blogapp.admin.repository.AdminRepository;
 import com.blogapp.user.entity.User;
 import com.blogapp.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -27,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -38,15 +41,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             String userId = jwtTokenProvider.getUserIdFromToken(token);
+            String role = jwtTokenProvider.getRoleFromToken(token);
 
-            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = userRepository.findById(userId).orElse(null);
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_USER")));
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+            if (userId != null && role != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if ("ROLE_ADMIN".equals(role)) {
+                    Admin admin = adminRepository.findById(userId).orElse(null);
+                    if (admin != null) {
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                                admin,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
+                } else {
+                    User user = userRepository.findById(userId).orElse(null);
+                    if (user != null) {
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
                 }
             }
         }
