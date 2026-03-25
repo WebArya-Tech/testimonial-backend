@@ -58,7 +58,7 @@ public class SecurityConfig {
                         // Authenticated user endpoints (submit answers, testimonials, media, account)
                         .requestMatchers(HttpMethod.POST, "/api/answers").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/testimonials").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/media/upload").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/media/signature").authenticated()
                         .requestMatchers("/api/account/**").authenticated()
 
                         // Admin endpoints

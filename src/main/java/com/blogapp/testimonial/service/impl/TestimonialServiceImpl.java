@@ -8,9 +8,11 @@ import com.blogapp.testimonial.dto.request.SubmitTestimonialRequest;
 import com.blogapp.testimonial.dto.response.TestimonialResponse;
 import com.blogapp.testimonial.entity.Testimonial;
 import com.blogapp.testimonial.enums.TestimonialStatus;
+import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.mapper.TestimonialMapper;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import com.blogapp.testimonial.service.TestimonialService;
+import com.blogapp.media.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     private final TestimonialRepository testimonialRepository;
     private final TeacherService teacherService;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public TestimonialResponse submit(SubmitTestimonialRequest request) {
@@ -157,6 +160,14 @@ public class TestimonialServiceImpl implements TestimonialService {
     @Override
     public void delete(String id) {
         Testimonial testimonial = getTestimonialEntity(id);
+        
+        // Prevent Cloudinary cost-leaks: Wiping a Video Testimonial should physically delete the origin payload too!
+        if (testimonial.getType() == TestimonialType.URL 
+                && testimonial.getContent() != null 
+                && testimonial.getContent().contains("cloudinary.com")) {
+            cloudinaryService.deleteMediaByUrl(testimonial.getContent());
+        }
+        
         testimonialRepository.delete(testimonial);
     }
 

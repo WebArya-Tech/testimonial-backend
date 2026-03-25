@@ -5,34 +5,27 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/media")
 @RequiredArgsConstructor
-@Tag(name = "Media Upload", description = "Secure authenticated endpoints for uploading media to Cloudinary")
+@Tag(name = "Media Upload", description = "Secure Direct-to-Cloudinary (Signed Upload) endpoints")
 public class MediaController {
 
     private final CloudinaryService cloudinaryService;
 
-    @PostMapping("/upload")
-    @Operation(summary = "Upload media file securely",
-            description = "Accepts a file stream, uploads it to Cloudinary utilizing backend credentials, and returns the secure HTTPS URL. Note: User MUST be fully authenticated with a JWT token or this will 403 Forbidden.")
-    public ResponseEntity<Map<String, String>> uploadMedia(
-            @RequestParam("file") MultipartFile file) {
+    @GetMapping("/signature")
+    @Operation(summary = "Get secure Cloudinary upload signature",
+            description = "Returns a cryptographically signed ticket allowing the frontend to upload a massive video/image directly to Cloudinary without consuming server bandwidth. Requires a valid JWT User/Admin token.")
+    public ResponseEntity<Map<String, Object>> getSignature() {
         
-        // This endpoint logic executes safely server-side
-        String secureUrl = cloudinaryService.uploadMedia(file);
+        Map<String, Object> signatureData = cloudinaryService.generateSignature();
+        return ResponseEntity.ok(signatureData);
         
-        return ResponseEntity.ok(Map.of(
-                "message", "Media uploaded securely",
-                "url", secureUrl
-        ));
     }
 }

@@ -5,9 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -23,25 +21,65 @@ public class CloudinaryService {
     }
 
     /**
-     * Uploads a multimedia file to Cloudinary.
-     * Supports images, videos, and raw files natively.
+     * Generates a secure, time-stamped signature for Direct-to-Cloudinary uploads.
+     * This ensures the VPS uses ZERO bandwidth while strictly authorizing user uploads.
      * 
-     * @param file The file stream from the frontend
-     * @return The secure HTTPS URL of the uploaded asset
+     * @return A map containing the signature and necessary credentials for the frontend API call
      */
-    public String uploadMedia(MultipartFile file) {
+    public Map<String, Object> generateSignature() {
         try {
-            // "auto" resource_type allows Cloudinary to automatically detect if it's an image or video
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "resource_type", "auto",
+            long timestamp = System.currentTimeMillis() / 1000L;
+            Map<String, Object> params = Map.of(
+                    "folder", "astar-testimonial-ask",
+                    "timestamp", timestamp
+            );
+            
+            String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret);
+            
+            return Map.of(
+                    "signature", signature,
+                    "timestamp", timestamp,
+                    "cloud_name", cloudinary.config.cloudName,
+                    "api_key", cloudinary.config.apiKey,
                     "folder", "astar-testimonial-ask"
-            ));
+            );
+        } catch (Exception e) {
+            log.error("Failed to generate Cloudinary signature", e);
+            throw new RuntimeException("Secure Signature Generation Failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a multimedia file natively from Cloudinary's servers.
+     * Prevents orphaned payloads from consuming storage quota when testimonials are wiped.
+     * 
+     * @param secureUrl The full HTTPS URL returned by the upload endpoint
+     */
+    public void deleteMediaByUrl(String secureUrl) {
+        try {
+            // URL parse example: https://res.cloudinary.com/demo/image/upload/v123456/astar-testimonial-ask/filename.jpg
+            java.net.URL url = new java.net.URL(secureUrl);
+            String urlPath = url.getPath(); 
+            String[] parts = urlPath.split("/upload/");
             
-            return uploadResult.get("secure_url").toString();
-            
-        } catch (IOException e) {
-            log.error("Failed to upload media to Cloudinary", e);
-            throw new RuntimeException("Media upload failed securely: " + e.getMessage());
+            if (parts.length == 2) {
+                String afterUpload = parts[1];
+                
+                // Strip the version prefix (e.g. "v123456/")
+                if (afterUpload.matches("v\\d+/.*")) {
+                    afterUpload = afterUpload.replaceFirst("v\\d+/", "");
+                }
+                
+                // Strip the file extension (e.g. ".jpg") to isolate the pristine public_id
+                int dotIndex = afterUpload.lastIndexOf('.');
+                String publicId = dotIndex != -1 ? afterUpload.substring(0, dotIndex) : afterUpload;
+                
+                // Natively destroy the file on Cloudinary (auto-detects resource_type as image/video via invalidate)
+                cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("invalidate", true));
+                log.info("Successfully wiped orphaned Cloudinary media payload: {}", publicId);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to wipe orphaned Cloudinary media payload at url {}: {}", secureUrl, e.getMessage());
         }
     }
 }
