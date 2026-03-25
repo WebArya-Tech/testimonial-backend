@@ -23,16 +23,16 @@ public class OtpServiceImpl implements OtpService {
     private final OtpRepository otpRepository;
     private final EmailService emailService;
 
-    @Value("${blog.otp.length:6}")
+    @Value("${app.otp.length:6}")
     private int otpLength;
 
-    @Value("${blog.otp.expiry-minutes:10}")
+    @Value("${app.otp.expiry-minutes:10}")
     private int expiryMinutes;
 
-    @Value("${blog.otp.max-attempts:5}")
+    @Value("${app.otp.max-attempts:5}")
     private int maxAttempts;
 
-    @Value("${blog.otp.resend-cooldown-seconds:60}")
+    @Value("${app.otp.resend-cooldown-seconds:60}")
     private int resendCooldownSeconds;
 
     @Override
