@@ -26,19 +26,17 @@ services:
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 
       # Admin Credentials (From .env or defaults)
-      - BLOG_ADMIN_USERNAME=${ADMIN_USERNAME}
-      - BLOG_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
       # Frontend URL
-      - BLOG_FRONTEND_URL=${FRONTEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
 
       # JWT Configuration
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRY_HOURS=${JWT_EXPIRY_HOURS}
 
-      # Razorpay Configuration
-      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
-      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+
 
     # Load environment variables from .env file
     env_file:
