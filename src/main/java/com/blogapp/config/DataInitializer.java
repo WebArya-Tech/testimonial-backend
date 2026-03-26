@@ -3,7 +3,6 @@ package com.blogapp.config;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import com.blogapp.user.entity.User;
@@ -94,9 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("amit.patel@example.com")
                         .content("Dr. Priya is an outstanding math teacher! Her coaching helped me score 98% in my board exams. The way she breaks down complex problems is simply brilliant.")
                         .type(TestimonialType.TEXT)
-                        .status(TestimonialStatus.APPROVED)
                         .isPrimary(true)
-                        .approvedByAdminId("admin")
                         .build(),
 
                 // TEXT review — approved
@@ -106,8 +103,6 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("sneha.g@example.com")
                         .content("Rajesh sir makes physics so easy to understand. His real-world examples and experiments made the subject come alive for me.")
                         .type(TestimonialType.TEXT)
-                        .status(TestimonialStatus.APPROVED)
-                        .approvedByAdminId("admin")
                         .build(),
 
                 // URL (video) review — approved & primary
@@ -117,9 +112,7 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("karan.s@example.com")
                         .content("https://res.cloudinary.com/demo/video/upload/v1234567890/testimonials/karan-review.mp4")
                         .type(TestimonialType.URL)
-                        .status(TestimonialStatus.APPROVED)
                         .isPrimary(true)
-                        .approvedByAdminId("admin")
                         .build(),
 
                 // TEXT review — pending
@@ -129,7 +122,6 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("meera.j@example.com")
                         .content("Ananya ma'am's IELTS coaching was life-changing. I got a band 8.5 on my first attempt thanks to her guidance!")
                         .type(TestimonialType.TEXT)
-                        .status(TestimonialStatus.PENDING)
                         .build(),
 
                 // URL (image) review — approved
@@ -139,8 +131,6 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("rohit.m@example.com")
                         .content("https://res.cloudinary.com/demo/image/upload/v1234567890/testimonials/rohit-certificate.jpg")
                         .type(TestimonialType.URL)
-                        .status(TestimonialStatus.APPROVED)
-                        .approvedByAdminId("admin")
                         .build(),
 
                 // TEXT review — rejected
@@ -150,8 +140,6 @@ public class DataInitializer implements CommandLineRunner {
                         .reviewerEmail("test@example.com")
                         .content("spam content")
                         .type(TestimonialType.TEXT)
-                        .status(TestimonialStatus.REJECTED)
-                        .rejectionReason("Spam / irrelevant content")
                         .build()
         );
     }

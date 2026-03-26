@@ -1,6 +1,5 @@
 package com.blogapp.testimonial.entity;
 
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import com.blogapp.testimonial.enums.TestimonialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,16 +41,8 @@ public class Testimonial {
     @Builder.Default
     private TestimonialType type = TestimonialType.TEXT;
 
-    @Indexed
-    @Builder.Default
-    private TestimonialStatus status = TestimonialStatus.PENDING;
-
     @Builder.Default
     private boolean isPrimary = false;
-
-    private String rejectionReason;
-
-    private String approvedByAdminId;
 
     @CreatedDate
     private LocalDateTime createdAt;

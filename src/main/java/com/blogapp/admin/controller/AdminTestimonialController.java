@@ -1,7 +1,7 @@
 package com.blogapp.admin.controller;
 
 import com.blogapp.common.dto.PageResponse;
-import com.blogapp.testimonial.dto.request.RejectTestimonialRequest;
+import com.blogapp.testimonial.dto.request.SubmitTestimonialRequest;
 import com.blogapp.testimonial.dto.response.TestimonialResponse;
 import com.blogapp.testimonial.service.TestimonialService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,28 +23,26 @@ public class AdminTestimonialController {
     private final TestimonialService testimonialService;
 
     @GetMapping
-    @Operation(summary = "List all testimonials",
-            description = "List testimonials with optional status filter (PENDING, APPROVED, REJECTED)")
+    @Operation(summary = "List all testimonials globally", description = "Admin dashboard list of all live testimonials")
     public ResponseEntity<PageResponse<TestimonialResponse>> getAllTestimonials(
-            @Parameter(description = "Filter by status: PENDING, APPROVED, REJECTED") @RequestParam(required = false) String status,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(testimonialService.getAll(status, page, size));
+        return ResponseEntity.ok(testimonialService.getPaginated(page, size));
     }
 
-    @PostMapping("/{id}/approve")
-    @Operation(summary = "Approve a testimonial")
-    public ResponseEntity<TestimonialResponse> approve(
-            @Parameter(description = "Testimonial ID") @PathVariable String id) {
-        return ResponseEntity.ok(testimonialService.approve(id, "admin"));
+    @PostMapping
+    @Operation(summary = "Admin creates a Testimonial", description = "Since public submissions are closed, Admins manually submit sourced testimonials here")
+    public ResponseEntity<TestimonialResponse> createTestimonial(
+            @Valid @RequestBody SubmitTestimonialRequest request) {
+        return ResponseEntity.ok(testimonialService.submit(request));
     }
 
-    @PostMapping("/{id}/reject")
-    @Operation(summary = "Reject a testimonial", description = "Rejection reason is required")
-    public ResponseEntity<TestimonialResponse> reject(
+    @PutMapping("/{id}")
+    @Operation(summary = "Admin edits an existing Testimonial")
+    public ResponseEntity<TestimonialResponse> updateTestimonial(
             @Parameter(description = "Testimonial ID") @PathVariable String id,
-            @Valid @RequestBody RejectTestimonialRequest request) {
-        return ResponseEntity.ok(testimonialService.reject(id, request.getReason()));
+            @Valid @RequestBody SubmitTestimonialRequest request) {
+        return ResponseEntity.ok(testimonialService.update(id, request));
     }
 
     @PostMapping("/{id}/primary")

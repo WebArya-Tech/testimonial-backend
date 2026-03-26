@@ -7,7 +7,6 @@ import com.blogapp.teacher.service.TeacherService;
 import com.blogapp.testimonial.dto.request.SubmitTestimonialRequest;
 import com.blogapp.testimonial.dto.response.TestimonialResponse;
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.mapper.TestimonialMapper;
 import com.blogapp.testimonial.repository.TestimonialRepository;
@@ -48,19 +47,33 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
-    public List<TestimonialResponse> getApprovedByTeacher(String teacherId) {
-        // Validate teacher exists
+    public TestimonialResponse update(String id, SubmitTestimonialRequest request) {
+        Testimonial testimonial = getTestimonialEntity(id);
+        Teacher teacher = teacherService.getTeacherEntity(request.getTeacherId());
+
+        testimonial.setTeacherId(request.getTeacherId());
+        testimonial.setReviewerName(request.getReviewerName());
+        testimonial.setReviewerEmail(request.getReviewerEmail());
+        testimonial.setContent(request.getContent());
+        testimonial.setType(request.getType());
+
+        testimonial = testimonialRepository.save(testimonial);
+        return TestimonialMapper.toResponse(testimonial, teacher.getName());
+    }
+
+    @Override
+    public List<TestimonialResponse> getByTeacher(String teacherId) {
         Teacher teacher = teacherService.getTeacherEntity(teacherId);
 
-        return testimonialRepository.findByTeacherIdAndStatus(teacherId, TestimonialStatus.APPROVED)
+        return testimonialRepository.findByTeacherId(teacherId)
                 .stream()
                 .map(t -> TestimonialMapper.toResponse(t, teacher.getName()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<TestimonialResponse> getAllApproved() {
-        return testimonialRepository.findByStatusOrderByCreatedAtDesc(TestimonialStatus.APPROVED)
+    public List<TestimonialResponse> getAll() {
+        return testimonialRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(t -> {
                     String teacherName = getTeacherNameSafe(t.getTeacherId());
@@ -71,7 +84,7 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     @Override
     public List<TestimonialResponse> getPrimaryTestimonials() {
-        return testimonialRepository.findByIsPrimaryTrueAndStatus(TestimonialStatus.APPROVED)
+        return testimonialRepository.findByIsPrimaryTrue()
                 .stream()
                 .map(t -> {
                     String teacherName = getTeacherNameSafe(t.getTeacherId());
@@ -81,17 +94,10 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
-    public PageResponse<TestimonialResponse> getAll(String status, int page, int size) {
-        Page<Testimonial> testimonialPage;
-
-        if (status != null && !status.isBlank()) {
-            TestimonialStatus testimonialStatus = TestimonialStatus.valueOf(status.toUpperCase());
-            testimonialPage = testimonialRepository.findByStatus(testimonialStatus,
-                    PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        } else {
-            testimonialPage = testimonialRepository.findAll(
-                    PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        }
+    public PageResponse<TestimonialResponse> getPaginated(int page, int size) {
+        Page<Testimonial> testimonialPage = testimonialRepository.findAllByOrderByCreatedAtDesc(
+                PageRequest.of(page, size)
+        );
 
         List<TestimonialResponse> content = testimonialPage.getContent().stream()
                 .map(t -> {
@@ -111,29 +117,6 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
-    public TestimonialResponse approve(String id, String adminId) {
-        Testimonial testimonial = getTestimonialEntity(id);
-        testimonial.setStatus(TestimonialStatus.APPROVED);
-        testimonial.setApprovedByAdminId(adminId);
-        testimonial.setRejectionReason(null);
-        testimonial = testimonialRepository.save(testimonial);
-
-        String teacherName = getTeacherNameSafe(testimonial.getTeacherId());
-        return TestimonialMapper.toResponse(testimonial, teacherName);
-    }
-
-    @Override
-    public TestimonialResponse reject(String id, String reason) {
-        Testimonial testimonial = getTestimonialEntity(id);
-        testimonial.setStatus(TestimonialStatus.REJECTED);
-        testimonial.setRejectionReason(reason);
-        testimonial = testimonialRepository.save(testimonial);
-
-        String teacherName = getTeacherNameSafe(testimonial.getTeacherId());
-        return TestimonialMapper.toResponse(testimonial, teacherName);
-    }
-
-    @Override
     public TestimonialResponse setPrimary(String id) {
         Testimonial testimonial = getTestimonialEntity(id);
 
@@ -147,10 +130,6 @@ public class TestimonialServiceImpl implements TestimonialService {
 
         // Set this one as primary
         testimonial.setPrimary(true);
-        // Auto-approve if still pending
-        if (testimonial.getStatus() != TestimonialStatus.APPROVED) {
-            testimonial.setStatus(TestimonialStatus.APPROVED);
-        }
         testimonial = testimonialRepository.save(testimonial);
 
         String teacherName = getTeacherNameSafe(testimonial.getTeacherId());

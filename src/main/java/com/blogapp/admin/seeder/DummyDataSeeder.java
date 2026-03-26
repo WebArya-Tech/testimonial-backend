@@ -10,13 +10,11 @@ import com.blogapp.question.repository.QuestionRepository;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -66,7 +64,6 @@ public class DummyDataSeeder implements CommandLineRunner {
                 .reviewerEmail("alice@example.com")
                 .content("Prof. Math is incredible! He broke down integrals effortlessly.")
                 .type(TestimonialType.TEXT)
-                .status(TestimonialStatus.APPROVED)
                 .isPrimary(true)
                 .createdAt(now)
                 .updatedAt(now)
@@ -78,7 +75,6 @@ public class DummyDataSeeder implements CommandLineRunner {
                 .reviewerEmail("bob@example.com")
                 .content("https://res.cloudinary.com/demo/video/upload/elephants.mp4")
                 .type(TestimonialType.URL)
-                .status(TestimonialStatus.PENDING)
                 .isPrimary(false)
                 .createdAt(now)
                 .updatedAt(now)

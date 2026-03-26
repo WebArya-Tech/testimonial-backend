@@ -1,7 +1,6 @@
 package com.blogapp.testimonial.repository;
 
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,13 +9,13 @@ import java.util.List;
 
 public interface TestimonialRepository extends MongoRepository<Testimonial, String> {
 
-    List<Testimonial> findByTeacherIdAndStatus(String teacherId, TestimonialStatus status);
+    List<Testimonial> findByTeacherId(String teacherId);
 
-    Page<Testimonial> findByStatus(TestimonialStatus status, Pageable pageable);
+    Page<Testimonial> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<Testimonial> findByStatusOrderByCreatedAtDesc(TestimonialStatus status);
+    List<Testimonial> findAllByOrderByCreatedAtDesc();
 
-    List<Testimonial> findByIsPrimaryTrueAndStatus(TestimonialStatus status);
+    List<Testimonial> findByIsPrimaryTrue();
 
     List<Testimonial> findByTeacherIdAndIsPrimaryTrue(String teacherId);
 }

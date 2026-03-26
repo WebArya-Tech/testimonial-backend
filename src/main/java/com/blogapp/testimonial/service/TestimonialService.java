@@ -10,17 +10,15 @@ public interface TestimonialService {
 
     TestimonialResponse submit(SubmitTestimonialRequest request);
 
-    List<TestimonialResponse> getApprovedByTeacher(String teacherId);
+    TestimonialResponse update(String id, SubmitTestimonialRequest request);
 
-    List<TestimonialResponse> getAllApproved();
+    List<TestimonialResponse> getByTeacher(String teacherId);
+
+    List<TestimonialResponse> getAll();
 
     List<TestimonialResponse> getPrimaryTestimonials();
 
-    PageResponse<TestimonialResponse> getAll(String status, int page, int size);
-
-    TestimonialResponse approve(String id, String adminId);
-
-    TestimonialResponse reject(String id, String reason);
+    PageResponse<TestimonialResponse> getPaginated(int page, int size);
 
     TestimonialResponse setPrimary(String id);
 
