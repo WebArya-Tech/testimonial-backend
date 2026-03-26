@@ -36,6 +36,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRY_HOURS=${JWT_EXPIRY_HOURS}
 
+      # Cloudinary Configuration
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+
     # Load environment variables from .env file
     env_file:
       - .env

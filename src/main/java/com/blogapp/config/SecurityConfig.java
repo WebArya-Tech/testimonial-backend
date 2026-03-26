@@ -37,8 +37,8 @@ public class SecurityConfig {
                         // Public — Teachers
                         .requestMatchers(HttpMethod.GET, "/api/teachers/**").permitAll()
 
-                        // Public — Testimonials (submit + view)
-                        .requestMatchers("/api/testimonials/**").permitAll()
+                        // Public — Testimonials (viewing only)
+                        .requestMatchers(HttpMethod.GET, "/api/testimonials/**").permitAll()
 
                         // Public — Ask System
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
@@ -55,8 +55,10 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
 
-                        // Authenticated user endpoints (submit answers, manage account)
+                        // Authenticated user endpoints (submit answers, testimonials, media, account)
                         .requestMatchers(HttpMethod.POST, "/api/answers").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/testimonials").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/media/signature").authenticated()
                         .requestMatchers("/api/account/**").authenticated()
 
                         // Admin endpoints

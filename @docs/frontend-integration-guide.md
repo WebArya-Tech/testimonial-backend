@@ -106,9 +106,15 @@ Before users can interact, an Admin configures categories and posts the question
 1. Any public visitor can fetch `GET /api/categories` to populate a category filter dropdown.
 2. The user calls `GET /api/questions?categoryId={id}` to view the questions inside that category.
 3. The user opens a specific question (`GET /api/questions/{id}`) and simultaneously calls `GET /api/answers/question/{id}` to fetch all **APPROVED** answers to read.
-4. **Submitting an Answer**: If the user wants to contribute, they must log in (Journey 1A). They then write their answer in a rich-text editor, and the frontend submits it to `POST /api/answers` (attaching the user's JWT). The backend automatically marks this answer as `PENDING`.
+4. **Submitting an Answer**: If the user wants to contribute, they must log in. If they want to upload an image into their answer, the frontend must first hit `GET /api/media/signature` to get a ticket. The frontend then pushes the image directly to Cloudinary using that ticket, retrieves the URL, and embeds that URL into their HTML. Finally, they submit to `POST /api/answers`.
 
-### Journey 3: Admin Moderation
+### Journey 3: User Submits a Testimonial
+1. The user navigates to a Teacher's profile and clicks "Write a Review".
+2. **Authentication Required**: The user **must** log in via the OTP flow to get a JWT token.
+3. **Media Upload**: If their testimonial is a Video or Image, the frontend hits `GET /api/media/signature`. The frontend then uploads the massive video directly from the user's browser to Cloudinary.
+4. The frontend calls `POST /api/testimonials` containing their review text and their Cloudinary media URL.
+
+### Journey 4: Admin Moderation
 1. The Admin checks the dashboard by calling `GET /api/admin/answers?status=PENDING`.
 2. The Admin evaluates the content.
 3. If good: The Admin calls `PATCH /api/admin/answers/{id}/approve`. This instantly switches the status to `APPROVED`, sends an automated congratulatory email to the user, and makes the answer visible to the public.
@@ -136,6 +142,18 @@ Before users can interact, an Admin configures categories and posts the question
 | **POST** | `/api/admin/questions` | Admin | `{ "title": "...", "descriptionHtml": "...", "categoryId": "..." }` | Admin creates a new question. |
 | **PUT** | `/api/admin/questions/{id}` | Admin | `{ "title": "...", "descriptionHtml": "...", "categoryId": "..." }` | Updates title, HTML, or moves the question to a new category. |
 | **DELETE**| `/api/admin/questions/{id}` | Admin | - | Wipes the question. |
+
+### Testimonials
+| Method | Endpoint | Auth | Body / Params | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/api/testimonials` | None | - | Lists all globally approved testimonials. |
+| **GET** | `/api/testimonials/teacher/{teacherId}` | None | - | Lists approved testimonials for a specific teacher. |
+| **POST** | `/api/testimonials` | User | `{ "teacherId": "...", "reviewerName": "...", "content": "..." }` | A logged-in user submits a testimonial. If they uploaded media first, `content` is the URL. |
+
+### Media Upload (Cloudinary Signed Direct Uploads)
+| Method | Endpoint | Auth | Body / Params | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/api/media/signature` | User / Admin | - | The backend returns a cryptographically signed ticket containing `{ signature, timestamp, cloud_name, api_key, folder }`. **How to use**: The frontend takes these fields, appends the raw `file` bytes to a `FormData` object, and makes a POST request DIRECTLY to `https://api.cloudinary.com/v1_1/<cloud_name>/auto/upload`. This completely bypasses the backend, saving massive VPS bandwidth!
 
 ### Answers
 | Method | Endpoint | Auth | Body / Params | Description |
