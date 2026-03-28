@@ -1,6 +1,5 @@
 package com.blogapp.testimonial.dto.response;
 
-import com.blogapp.testimonial.enums.TestimonialStatus;
 import com.blogapp.testimonial.enums.TestimonialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +21,7 @@ public class TestimonialResponse {
     private String reviewerEmail;
     private String content;
     private TestimonialType type;
-    private TestimonialStatus status;
     private boolean isPrimary;
-    private String rejectionReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

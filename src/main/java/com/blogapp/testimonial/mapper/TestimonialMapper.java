@@ -16,9 +16,7 @@ public class TestimonialMapper {
                 .reviewerEmail(testimonial.getReviewerEmail())
                 .content(testimonial.getContent())
                 .type(testimonial.getType())
-                .status(testimonial.getStatus())
                 .isPrimary(testimonial.isPrimary())
-                .rejectionReason(testimonial.getRejectionReason())
                 .createdAt(testimonial.getCreatedAt())
                 .updatedAt(testimonial.getUpdatedAt())
                 .build();
