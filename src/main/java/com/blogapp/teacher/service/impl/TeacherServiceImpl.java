@@ -27,10 +27,12 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherResponse create(CreateTeacherRequest request) {
         Teacher teacher = Teacher.builder()
-                .name(request.getName())
+                .fullName(request.getFullName())
+                .category(request.getCategory())
+                .mainSubject(request.getMainSubject())
+                .speciality(request.getSpeciality())
                 .bio(request.getBio())
                 .photoUrl(request.getPhotoUrl())
-                .specialization(request.getSpecialization())
                 .build();
 
         teacher = teacherRepository.save(teacher);
@@ -73,10 +75,12 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherResponse update(String id, UpdateTeacherRequest request) {
         Teacher teacher = getTeacherEntity(id);
 
-        if (request.getName() != null) teacher.setName(request.getName());
+        if (request.getFullName() != null) teacher.setFullName(request.getFullName());
+        if (request.getCategory() != null) teacher.setCategory(request.getCategory());
+        if (request.getMainSubject() != null) teacher.setMainSubject(request.getMainSubject());
+        if (request.getSpeciality() != null) teacher.setSpeciality(request.getSpeciality());
         if (request.getBio() != null) teacher.setBio(request.getBio());
         if (request.getPhotoUrl() != null) teacher.setPhotoUrl(request.getPhotoUrl());
-        if (request.getSpecialization() != null) teacher.setSpecialization(request.getSpecialization());
         if (request.getIsActive() != null) teacher.setActive(request.getIsActive());
 
         teacher = teacherRepository.save(teacher);
