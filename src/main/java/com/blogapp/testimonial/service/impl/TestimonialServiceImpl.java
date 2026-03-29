@@ -43,7 +43,7 @@ public class TestimonialServiceImpl implements TestimonialService {
                 .build();
 
         testimonial = testimonialRepository.save(testimonial);
-        return TestimonialMapper.toResponse(testimonial, teacher.getName());
+        return TestimonialMapper.toResponse(testimonial, teacher.getFullName());
     }
 
     @Override
@@ -58,7 +58,7 @@ public class TestimonialServiceImpl implements TestimonialService {
         testimonial.setType(request.getType());
 
         testimonial = testimonialRepository.save(testimonial);
-        return TestimonialMapper.toResponse(testimonial, teacher.getName());
+        return TestimonialMapper.toResponse(testimonial, teacher.getFullName());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class TestimonialServiceImpl implements TestimonialService {
 
         return testimonialRepository.findByTeacherId(teacherId)
                 .stream()
-                .map(t -> TestimonialMapper.toResponse(t, teacher.getName()))
+                .map(t -> TestimonialMapper.toResponse(t, teacher.getFullName()))
                 .collect(Collectors.toList());
     }
 
@@ -157,7 +157,7 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     private String getTeacherNameSafe(String teacherId) {
         try {
-            return teacherService.getTeacherEntity(teacherId).getName();
+            return teacherService.getTeacherEntity(teacherId).getFullName();
         } catch (ResourceNotFoundException e) {
             return "Unknown Teacher";
         }

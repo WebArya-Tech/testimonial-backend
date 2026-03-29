@@ -47,10 +47,12 @@ public class DummyDataSeeder implements CommandLineRunner {
 
         // 1. Seed Teacher
         Teacher mathTeacher = Teacher.builder()
-                .name("Prof. Alan Math")
+                .fullName("Prof. Alan Math")
                 .bio("Advanced Calculus & Algebra Specialist with 10 years at MIT.")
                 .photoUrl("https://ui-avatars.com/api/?name=Alan+Math&background=random")
-                .specialization("Mathematics")
+                .speciality("Mathematics")
+                .category("Science")
+                .mainSubject("Calculus")
                 .isActive(true)
                 .createdAt(now)
                 .updatedAt(now)

@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 public class TeacherResponse {
 
     private String id;
-    private String name;
+    private String fullName;
+    private String category;
+    private String mainSubject;
+    private String speciality;
     private String bio;
     private String photoUrl;
-    private String specialization;
     private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

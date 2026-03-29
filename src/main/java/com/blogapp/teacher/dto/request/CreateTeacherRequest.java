@@ -10,12 +10,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateTeacherRequest {
 
-    @NotBlank(message = "Teacher name is required")
-    private String name;
+    @NotBlank(message = "Teacher full name is required")
+    private String fullName;
+
+    private String category;
+    
+    private String mainSubject;
+
+    private String speciality;
 
     private String bio;
 
     private String photoUrl;
-
-    private String specialization;
 }
