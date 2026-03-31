@@ -15,7 +15,6 @@ public class TeacherResponse {
 
     private String id;
     private String fullName;
-    private String category;
     private String mainSubject;
     private String speciality;
     private String bio;

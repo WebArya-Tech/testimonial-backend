@@ -11,7 +11,6 @@ public class TeacherMapper {
         return TeacherResponse.builder()
                 .id(teacher.getId())
                 .fullName(teacher.getFullName())
-                .category(teacher.getCategory())
                 .mainSubject(teacher.getMainSubject())
                 .speciality(teacher.getSpeciality())
                 .bio(teacher.getBio())

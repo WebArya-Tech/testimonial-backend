@@ -1,6 +1,5 @@
 package com.blogapp.testimonial.entity;
 
-import com.blogapp.testimonial.enums.TestimonialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,23 +22,9 @@ public class Testimonial {
     @Id
     private String id;
 
-    @Indexed
-    private String teacherId;
+    private String text;
 
-    private String reviewerName;
-
-    private String reviewerEmail;
-
-    /**
-     * Holds either plain text review or a Cloudinary URL
-     * (video/image/audio). The 'type' field tells the frontend
-     * how to render this content.
-     */
-    private String content;
-
-    @Indexed
-    @Builder.Default
-    private TestimonialType type = TestimonialType.TEXT;
+    private String mediaUrl;
 
     @Builder.Default
     private boolean isPrimary = false;

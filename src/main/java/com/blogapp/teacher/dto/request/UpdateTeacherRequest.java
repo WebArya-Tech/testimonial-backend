@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 public class UpdateTeacherRequest {
 
     private String fullName;
-
-    private String category;
     
     private String mainSubject;
 

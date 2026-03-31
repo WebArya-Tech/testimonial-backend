@@ -9,13 +9,9 @@ import java.util.List;
 
 public interface TestimonialRepository extends MongoRepository<Testimonial, String> {
 
-    List<Testimonial> findByTeacherId(String teacherId);
-
     Page<Testimonial> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     List<Testimonial> findAllByOrderByCreatedAtDesc();
 
     List<Testimonial> findByIsPrimaryTrue();
-
-    List<Testimonial> findByTeacherIdAndIsPrimaryTrue(String teacherId);
 }

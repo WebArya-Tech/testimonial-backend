@@ -12,8 +12,6 @@ public class CreateTeacherRequest {
 
     @NotBlank(message = "Teacher full name is required")
     private String fullName;
-
-    private String category;
     
     private String mainSubject;
 

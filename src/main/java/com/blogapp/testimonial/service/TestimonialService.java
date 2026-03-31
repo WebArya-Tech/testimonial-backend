@@ -12,8 +12,6 @@ public interface TestimonialService {
 
     TestimonialResponse update(String id, SubmitTestimonialRequest request);
 
-    List<TestimonialResponse> getByTeacher(String teacherId);
-
     List<TestimonialResponse> getAll();
 
     List<TestimonialResponse> getPrimaryTestimonials();

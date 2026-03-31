@@ -28,7 +28,6 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherResponse create(CreateTeacherRequest request) {
         Teacher teacher = Teacher.builder()
                 .fullName(request.getFullName())
-                .category(request.getCategory())
                 .mainSubject(request.getMainSubject())
                 .speciality(request.getSpeciality())
                 .bio(request.getBio())
@@ -76,7 +75,6 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = getTeacherEntity(id);
 
         if (request.getFullName() != null) teacher.setFullName(request.getFullName());
-        if (request.getCategory() != null) teacher.setCategory(request.getCategory());
         if (request.getMainSubject() != null) teacher.setMainSubject(request.getMainSubject());
         if (request.getSpeciality() != null) teacher.setSpeciality(request.getSpeciality());
         if (request.getBio() != null) teacher.setBio(request.getBio());

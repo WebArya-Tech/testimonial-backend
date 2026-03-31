@@ -32,10 +32,4 @@ public class TestimonialController {
         return ResponseEntity.ok(testimonialService.getPrimaryTestimonials());
     }
 
-    @GetMapping("/teacher/{teacherId}")
-    @Operation(summary = "Get testimonials for a specific teacher")
-    public ResponseEntity<List<TestimonialResponse>> getByTeacher(
-            @Parameter(description = "Teacher ID") @PathVariable String teacherId) {
-        return ResponseEntity.ok(testimonialService.getByTeacher(teacherId));
-    }
 }
