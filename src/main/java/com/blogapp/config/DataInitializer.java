@@ -3,7 +3,6 @@ package com.blogapp.config;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import com.blogapp.user.entity.User;
 import com.blogapp.user.repository.UserRepository;
@@ -62,7 +61,6 @@ public class DataInitializer implements CommandLineRunner {
                         .bio("Senior Mathematics Coach with 15+ years of experience in competitive exam preparation.")
                         .photoUrl("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400")
                         .speciality("Mathematics")
-                        .category("Science")
                         .mainSubject("Maths")
                         .build(),
                 Teacher.builder()
@@ -70,7 +68,6 @@ public class DataInitializer implements CommandLineRunner {
                         .bio("Physics expert and mentor. IIT alumnus passionate about making physics intuitive and fun.")
                         .photoUrl("https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400")
                         .speciality("Physics")
-                        .category("Science")
                         .mainSubject("Physics")
                         .build(),
                 Teacher.builder()
@@ -78,7 +75,6 @@ public class DataInitializer implements CommandLineRunner {
                         .bio("English language and communication coach. Specializes in IELTS, TOEFL, and public speaking.")
                         .photoUrl("https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400")
                         .speciality("English & Communication")
-                        .category("Arts")
                         .mainSubject("English")
                         .build(),
                 Teacher.builder()
@@ -86,7 +82,6 @@ public class DataInitializer implements CommandLineRunner {
                         .bio("Chemistry coach with a knack for simplifying organic chemistry. 10+ years of coaching experience.")
                         .photoUrl("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400")
                         .speciality("Chemistry")
-                        .category("Science")
                         .mainSubject("Chemistry")
                         .build()
         );
@@ -96,58 +91,40 @@ public class DataInitializer implements CommandLineRunner {
         return Arrays.asList(
                 // TEXT review — approved & primary
                 Testimonial.builder()
-                        .teacherId(teachers.get(0).getId())
-                        .reviewerName("Amit Patel")
-                        .reviewerEmail("amit.patel@example.com")
-                        .content("Dr. Priya is an outstanding math teacher! Her coaching helped me score 98% in my board exams. The way she breaks down complex problems is simply brilliant.")
-                        .type(TestimonialType.TEXT)
+                        .text("Dr. Priya is an outstanding math teacher! Her coaching helped me score 98% in my board exams. The way she breaks down complex problems is simply brilliant.")
+                        .mediaUrl("")
                         .isPrimary(true)
                         .build(),
 
                 // TEXT review — approved
                 Testimonial.builder()
-                        .teacherId(teachers.get(1).getId())
-                        .reviewerName("Sneha Gupta")
-                        .reviewerEmail("sneha.g@example.com")
-                        .content("Rajesh sir makes physics so easy to understand. His real-world examples and experiments made the subject come alive for me.")
-                        .type(TestimonialType.TEXT)
+                        .text("Rajesh sir makes physics so easy to understand. His real-world examples and experiments made the subject come alive for me.")
+                        .mediaUrl("")
                         .build(),
 
                 // URL (video) review — approved & primary
                 Testimonial.builder()
-                        .teacherId(teachers.get(1).getId())
-                        .reviewerName("Karan Singh")
-                        .reviewerEmail("karan.s@example.com")
-                        .content("https://res.cloudinary.com/demo/video/upload/v1234567890/testimonials/karan-review.mp4")
-                        .type(TestimonialType.URL)
+                        .text("Amazing practicals in class today!")
+                        .mediaUrl("https://res.cloudinary.com/demo/video/upload/v1234567890/testimonials/karan-review.mp4")
                         .isPrimary(true)
                         .build(),
 
                 // TEXT review — pending
                 Testimonial.builder()
-                        .teacherId(teachers.get(2).getId())
-                        .reviewerName("Meera Joshi")
-                        .reviewerEmail("meera.j@example.com")
-                        .content("Ananya ma'am's IELTS coaching was life-changing. I got a band 8.5 on my first attempt thanks to her guidance!")
-                        .type(TestimonialType.TEXT)
+                        .text("Ananya ma'am's IELTS coaching was life-changing. I got a band 8.5 on my first attempt thanks to her guidance!")
+                        .mediaUrl("")
                         .build(),
 
                 // URL (image) review — approved
                 Testimonial.builder()
-                        .teacherId(teachers.get(3).getId())
-                        .reviewerName("Rohit Mehta")
-                        .reviewerEmail("rohit.m@example.com")
-                        .content("https://res.cloudinary.com/demo/image/upload/v1234567890/testimonials/rohit-certificate.jpg")
-                        .type(TestimonialType.URL)
+                        .text("Got my certificate directly signed!")
+                        .mediaUrl("https://res.cloudinary.com/demo/image/upload/v1234567890/testimonials/rohit-certificate.jpg")
                         .build(),
 
                 // TEXT review — rejected
                 Testimonial.builder()
-                        .teacherId(teachers.get(0).getId())
-                        .reviewerName("Test User")
-                        .reviewerEmail("test@example.com")
-                        .content("spam content")
-                        .type(TestimonialType.TEXT)
+                        .text("spam content")
+                        .mediaUrl("")
                         .build()
         );
     }

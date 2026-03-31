@@ -7,15 +7,11 @@ public class TestimonialMapper {
 
     private TestimonialMapper() {}
 
-    public static TestimonialResponse toResponse(Testimonial testimonial, String teacherName) {
+    public static TestimonialResponse toResponse(Testimonial testimonial) {
         return TestimonialResponse.builder()
                 .id(testimonial.getId())
-                .teacherId(testimonial.getTeacherId())
-                .teacherName(teacherName)
-                .reviewerName(testimonial.getReviewerName())
-                .reviewerEmail(testimonial.getReviewerEmail())
-                .content(testimonial.getContent())
-                .type(testimonial.getType())
+                .text(testimonial.getText())
+                .mediaUrl(testimonial.getMediaUrl())
                 .isPrimary(testimonial.isPrimary())
                 .createdAt(testimonial.getCreatedAt())
                 .updatedAt(testimonial.getUpdatedAt())

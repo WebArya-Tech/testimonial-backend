@@ -25,8 +25,6 @@ public class Teacher {
     @Indexed(unique = true)
     private String fullName;
     
-    private String category;
-    
     private String mainSubject;
 
     private String speciality;

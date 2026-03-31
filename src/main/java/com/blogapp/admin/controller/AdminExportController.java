@@ -30,7 +30,7 @@ public class AdminExportController {
         List<Testimonial> data = testimonialRepository.findAll();
 
         // 2. Define exactly what goes in the columns
-        String[] headers = {"Testimonial ID", "User Email", "User Name", "Type", "Content"};
+        String[] headers = {"Testimonial ID", "Text", "Media URL"};
 
         // 3. Tell the generic service HOW to map the entity into the columns
         csvExportService.exportCsvToResponse(
@@ -40,10 +40,8 @@ public class AdminExportController {
                 data, 
                 (Testimonial t) -> new String[]{
                         t.getId(),
-                        t.getReviewerEmail(),
-                        t.getReviewerName(),
-                        t.getType().name(),
-                        t.getContent()
+                        t.getText(),
+                        t.getMediaUrl() != null ? t.getMediaUrl() : ""
                 }
         );
     }

@@ -10,7 +10,6 @@ import com.blogapp.question.repository.QuestionRepository;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
-import com.blogapp.testimonial.enums.TestimonialType;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +50,6 @@ public class DummyDataSeeder implements CommandLineRunner {
                 .bio("Advanced Calculus & Algebra Specialist with 10 years at MIT.")
                 .photoUrl("https://ui-avatars.com/api/?name=Alan+Math&background=random")
                 .speciality("Mathematics")
-                .category("Science")
                 .mainSubject("Calculus")
                 .isActive(true)
                 .createdAt(now)
@@ -61,22 +59,16 @@ public class DummyDataSeeder implements CommandLineRunner {
 
         // 2. Seed Testimonials for Teacher
         Testimonial textReview = Testimonial.builder()
-                .teacherId(mathTeacher.getId())
-                .reviewerName("Alice Student")
-                .reviewerEmail("alice@example.com")
-                .content("Prof. Math is incredible! He broke down integrals effortlessly.")
-                .type(TestimonialType.TEXT)
+                .text("Prof. Math is incredible! He broke down integrals effortlessly.")
+                .mediaUrl("")
                 .isPrimary(true)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
         
         Testimonial videoReview = Testimonial.builder()
-                .teacherId(mathTeacher.getId())
-                .reviewerName("Bob Learner")
-                .reviewerEmail("bob@example.com")
-                .content("https://res.cloudinary.com/demo/video/upload/elephants.mp4")
-                .type(TestimonialType.URL)
+                .text("This visual representation really helped my understanding!")
+                .mediaUrl("https://res.cloudinary.com/demo/video/upload/elephants.mp4")
                 .isPrimary(false)
                 .createdAt(now)
                 .updatedAt(now)
