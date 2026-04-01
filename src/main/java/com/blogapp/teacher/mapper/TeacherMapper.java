@@ -5,7 +5,8 @@ import com.blogapp.teacher.entity.Teacher;
 
 public class TeacherMapper {
 
-    private TeacherMapper() {}
+    private TeacherMapper() {
+    }
 
     public static TeacherResponse toResponse(Teacher teacher) {
         return TeacherResponse.builder()
@@ -14,6 +15,7 @@ public class TeacherMapper {
                 .mainSubject(teacher.getMainSubject())
                 .speciality(teacher.getSpeciality())
                 .bio(teacher.getBio())
+                .category(teacher.getCategory())
                 .photoUrl(teacher.getPhotoUrl())
                 .isActive(teacher.isActive())
                 .createdAt(teacher.getCreatedAt())

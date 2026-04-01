@@ -18,6 +18,7 @@ public class TeacherResponse {
     private String mainSubject;
     private String speciality;
     private String bio;
+    private String category;
     private String photoUrl;
     private boolean isActive;
     private LocalDateTime createdAt;

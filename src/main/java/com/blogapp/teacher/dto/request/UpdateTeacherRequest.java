@@ -17,6 +17,8 @@ public class UpdateTeacherRequest {
 
     private String bio;
 
+    private String category;
+
     private String photoUrl;
 
     private Boolean isActive;
