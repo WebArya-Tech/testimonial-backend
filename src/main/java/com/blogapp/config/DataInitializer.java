@@ -60,6 +60,7 @@ public class DataInitializer implements CommandLineRunner {
                         .fullName("Dr. Priya Sharma")
                         .bio("Senior Mathematics Coach with 15+ years of experience in competitive exam preparation.")
                         .photoUrl("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400")
+                        .category("Science")
                         .speciality("Mathematics")
                         .mainSubject("Maths")
                         .build(),
@@ -67,6 +68,7 @@ public class DataInitializer implements CommandLineRunner {
                         .fullName("Rajesh Kumar")
                         .bio("Physics expert and mentor. IIT alumnus passionate about making physics intuitive and fun.")
                         .photoUrl("https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400")
+                        .category("Science")
                         .speciality("Physics")
                         .mainSubject("Physics")
                         .build(),
@@ -74,6 +76,7 @@ public class DataInitializer implements CommandLineRunner {
                         .fullName("Ananya Iyer")
                         .bio("English language and communication coach. Specializes in IELTS, TOEFL, and public speaking.")
                         .photoUrl("https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400")
+                        .category("Language")
                         .speciality("English & Communication")
                         .mainSubject("English")
                         .build(),
@@ -81,6 +84,7 @@ public class DataInitializer implements CommandLineRunner {
                         .fullName("Vikram Desai")
                         .bio("Chemistry coach with a knack for simplifying organic chemistry. 10+ years of coaching experience.")
                         .photoUrl("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400")
+                        .category("Science")
                         .speciality("Chemistry")
                         .mainSubject("Chemistry")
                         .build()

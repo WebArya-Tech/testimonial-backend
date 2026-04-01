@@ -24,12 +24,14 @@ public class Teacher {
 
     @Indexed(unique = true)
     private String fullName;
-    
+
     private String mainSubject;
 
     private String speciality;
 
     private String bio;
+
+    private String category;
 
     private String photoUrl;
 

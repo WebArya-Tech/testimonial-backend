@@ -19,5 +19,7 @@ public class CreateTeacherRequest {
 
     private String bio;
 
+    private String category;
+
     private String photoUrl;
 }

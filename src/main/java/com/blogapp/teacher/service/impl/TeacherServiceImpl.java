@@ -31,6 +31,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .mainSubject(request.getMainSubject())
                 .speciality(request.getSpeciality())
                 .bio(request.getBio())
+                .category(request.getCategory())
                 .photoUrl(request.getPhotoUrl())
                 .build();
 
@@ -78,6 +79,7 @@ public class TeacherServiceImpl implements TeacherService {
         if (request.getMainSubject() != null) teacher.setMainSubject(request.getMainSubject());
         if (request.getSpeciality() != null) teacher.setSpeciality(request.getSpeciality());
         if (request.getBio() != null) teacher.setBio(request.getBio());
+        if (request.getCategory() != null) teacher.setCategory(request.getCategory());
         if (request.getPhotoUrl() != null) teacher.setPhotoUrl(request.getPhotoUrl());
         if (request.getIsActive() != null) teacher.setActive(request.getIsActive());
 

@@ -49,6 +49,7 @@ public class DummyDataSeeder implements CommandLineRunner {
                 .fullName("Prof. Alan Math")
                 .bio("Advanced Calculus & Algebra Specialist with 10 years at MIT.")
                 .photoUrl("https://ui-avatars.com/api/?name=Alan+Math&background=random")
+                .category("Science")
                 .speciality("Mathematics")
                 .mainSubject("Calculus")
                 .isActive(true)
