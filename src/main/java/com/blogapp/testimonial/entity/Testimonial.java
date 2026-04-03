@@ -24,7 +24,7 @@ public class Testimonial {
 
     private String text;
 
-    private String mediaUrl;
+    private String videoUrl;
 
     @Builder.Default
     private boolean isPrimary = false;
