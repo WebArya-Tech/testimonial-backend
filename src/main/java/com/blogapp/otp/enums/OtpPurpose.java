@@ -2,5 +2,6 @@ package com.blogapp.otp.enums;
 
 public enum OtpPurpose {
     USER_LOGIN,
-    ADMIN_PASSWORD_RESET
+    ADMIN_PASSWORD_RESET,
+    SCHEDULE_DEMO
 }
