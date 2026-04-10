@@ -45,6 +45,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/answers/question/**").permitAll()
 
+                        // Public - New Endpoints (Demo, Contact)
+                        .requestMatchers("/api/public/**").permitAll()
+
                         // Auth
                         .requestMatchers("/api/auth/**").permitAll()
 
