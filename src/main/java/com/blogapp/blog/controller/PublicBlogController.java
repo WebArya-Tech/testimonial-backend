@@ -21,6 +21,7 @@ import java.util.List;
 public class PublicBlogController {
 
     private final BlogService blogService;
+    private final com.blogapp.blog.mapper.BlogMapper blogMapper;
 
     @GetMapping
     @Operation(summary = "Get published blogs", description = "Fetch published blogs with optional search, year/month filter, and sorting")
@@ -52,5 +53,15 @@ public class PublicBlogController {
         blogService.incrementViewCount(blog.getId());
 
         return ResponseEntity.ok(blog);
+    }
+
+    @PostMapping
+    @Operation(summary = "Submit a blog post", description = "Users or educators can submit a blog post. It goes to PENDING status awaiting admin approval.")
+    public ResponseEntity<BlogDetailResponse> submitBlog(
+            @org.springframework.web.bind.annotation.RequestBody @jakarta.validation.Valid com.blogapp.blog.dto.request.CreateBlogRequest request) {
+        
+        com.blogapp.blog.entity.BlogPost createdBlog = blogService.createBlog(request, request.getAuthorName(), request.getAuthorEmail(), request.getAuthorMobile());
+        
+        return ResponseEntity.ok(blogMapper.toDetailResponse(createdBlog));
     }
 }

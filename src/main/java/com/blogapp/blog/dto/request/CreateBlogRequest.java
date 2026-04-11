@@ -38,4 +38,15 @@ public class CreateBlogRequest {
 
     @Schema(description = "Tags for the blog", example = "[\"physics\", \"igcse\", \"exam-prep\"]")
     private List<String> tags;
+
+    @NotBlank(message = "Author Name is required")
+    @Schema(description = "Name of the blog author", example = "Jane Doe")
+    private String authorName;
+
+    @NotBlank(message = "Author Email is required")
+    @Schema(description = "Email of the blog author", example = "jane@example.com")
+    private String authorEmail;
+
+    @Schema(description = "Mobile number of the blog author", example = "1234567890")
+    private String authorMobile;
 }
