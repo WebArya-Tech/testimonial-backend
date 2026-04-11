@@ -39,29 +39,31 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
-        if (teacherRepository.count() > 0) {
-            log.info("Database already contains data. Skipping initialization.");
-            return;
-        }
-
-        log.info("Initializing database with seed data...");
+        log.info("Checking database state for initialization...");
 
         // ── Teachers ──
-        List<Teacher> teachers = createSampleTeachers();
-        teacherRepository.saveAll(teachers);
-        log.info("Created {} sample teachers", teachers.size());
+        if (teacherRepository.count() == 0) {
+            List<Teacher> teachers = createSampleTeachers();
+            teacherRepository.saveAll(teachers);
+            log.info("Created {} sample teachers", teachers.size());
 
-        // ── Testimonials ──
-        List<Testimonial> testimonials = createSampleTestimonials(teachers);
-        testimonialRepository.saveAll(testimonials);
-        log.info("Created {} sample testimonials", testimonials.size());
+            // ── Testimonials (Depend on Teachers) ──
+            if (testimonialRepository.count() == 0) {
+                List<Testimonial> testimonials = createSampleTestimonials(teachers);
+                testimonialRepository.saveAll(testimonials);
+                log.info("Created {} sample testimonials", testimonials.size());
+            }
+        } else {
+            log.info("Teachers/Testimonials collection already has data. Skipping.");
+        }
 
         // ── Users ──
         if (userRepository.count() == 0) {
             List<User> users = createSampleUsers();
             userRepository.saveAll(users);
             log.info("Created {} sample users", users.size());
+        } else {
+            log.info("Users collection already has data. Skipping.");
         }
 
         // ── Boards ──
@@ -75,6 +77,8 @@ public class DataInitializer implements CommandLineRunner {
             );
             boardRepository.saveAll(boards);
             log.info("Created {} sample boards", boards.size());
+        } else {
+            log.info("Boards collection already has data. Skipping.");
         }
 
         // ── Grades ──
@@ -90,6 +94,8 @@ public class DataInitializer implements CommandLineRunner {
             );
             gradeRepository.saveAll(grades);
             log.info("Created {} sample grades", grades.size());
+        } else {
+            log.info("Grades collection already has data. Skipping.");
         }
 
         // ── Contact Subjects ──
@@ -103,6 +109,8 @@ public class DataInitializer implements CommandLineRunner {
             );
             contactSubjectRepository.saveAll(subjects);
             log.info("Created {} sample contact subjects", subjects.size());
+        } else {
+            log.info("Contact Subjects collection already has data. Skipping.");
         }
 
         // ── Blogs ──
@@ -110,6 +118,8 @@ public class DataInitializer implements CommandLineRunner {
             List<BlogPost> blogs = createSampleBlogs();
             blogPostRepository.saveAll(blogs);
             log.info("Created {} sample blogs", blogs.size());
+        } else {
+            log.info("Blogs collection already has data. Skipping.");
         }
 
         log.info("Database initialization completed successfully!");
