@@ -47,6 +47,8 @@ public class SecurityConfig {
 
                         // Public - Blogs
                         .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/reactions/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/blogs/submissions/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll() // Earlier single-post endpoint
 
