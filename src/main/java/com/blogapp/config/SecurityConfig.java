@@ -47,6 +47,7 @@ public class SecurityConfig {
 
                         // Public - Blogs
                         .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll()
 
                         // Public - New Endpoints (Demo, Contact)
                         .requestMatchers("/api/public/**").permitAll()
