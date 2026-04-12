@@ -38,6 +38,7 @@ public class BlogServiceImpl implements BlogService {
     private final BlogPostRepository blogPostRepository;
     private final BlogMapper blogMapper;
     private final MongoTemplate mongoTemplate;
+    private final com.blogapp.otp.service.OtpService otpService;
 
     @Override
     public PageResponse<BlogSummaryResponse> getPublishedBlogs(String search, Integer year, Integer month,
@@ -269,5 +270,23 @@ public class BlogServiceImpl implements BlogService {
                 .orElseThrow(() -> new ResourceNotFoundException("Blog ", "id: ", id));
         // Note: Decoupled from comment logic as comment module is excluded in this migration
         blogPostRepository.delete(blog);
+    }
+
+    @Override
+    public void startSubmission(String email) {
+        otpService.sendOtp(email, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION);
+    }
+
+    @Override
+    public boolean verifySubmission(String email, String otp) {
+        return otpService.verifyOtp(email, otp, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION);
+    }
+
+    @Override
+    public BlogPost finishSubmission(CreateBlogRequest request) {
+        if (!otpService.isEmailVerified(request.getAuthorEmail(), com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION)) {
+            throw new BadRequestException("Email not verified for blog submission");
+        }
+        return createBlog(request, request.getAuthorName(), request.getAuthorEmail(), request.getAuthorMobile());
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/blogs")
+@RequestMapping("/admin/api/blogs")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Admin Blog Moderation", description = "Admin endpoints for blog approval, rejection, editing, and management")
@@ -83,7 +83,7 @@ public class AdminBlogController {
         return ResponseEntity.ok(blogMapper.toDetailResponse(rejectedBlog));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Edit a blog", description = "Admin can edit blog content before or after publishing")
     public ResponseEntity<BlogDetailResponse> editBlog(
             @Parameter(description = "Blog ID") @PathVariable String id,

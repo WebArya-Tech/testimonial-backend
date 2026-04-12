@@ -1,0 +1,31 @@
+package com.blogapp.blog.dto.request;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+public class SubmissionRequest {
+
+    @Data
+    @Schema(description = "Request to start blog submission via OTP")
+    public static class Start {
+        @NotBlank(message = "Author email is required")
+        @Email(message = "Invalid email format")
+        @Schema(example = "jane@example.com")
+        private String authorEmail;
+    }
+
+    @Data
+    @Schema(description = "Request to verify OTP for blog submission")
+    public static class Verify {
+        @NotBlank(message = "Author email is required")
+        @Email(message = "Invalid email format")
+        @Schema(example = "jane@example.com")
+        private String authorEmail;
+
+        @NotBlank(message = "OTP code is required")
+        @Schema(example = "123456")
+        private String otp;
+    }
+}

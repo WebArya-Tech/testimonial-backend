@@ -47,7 +47,8 @@ public class SecurityConfig {
 
                         // Public - Blogs
                         .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/submissions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll() // Earlier single-post endpoint
 
                         // Public - New Endpoints (Demo, Contact)
                         .requestMatchers("/api/public/**").permitAll()
@@ -70,6 +71,7 @@ public class SecurityConfig {
 
                         // Admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/api/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

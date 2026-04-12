@@ -1,14 +1,16 @@
 package com.blogapp.config;
 
+import com.blogapp.admin.entity.Admin;
+import com.blogapp.admin.repository.AdminRepository;
+import com.blogapp.blog.entity.BlogPost;
+import com.blogapp.blog.enums.BlogStatus;
+import com.blogapp.blog.repository.BlogPostRepository;
+import com.blogapp.contact.entity.ContactSubject;
+import com.blogapp.contact.repository.ContactSubjectRepository;
 import com.blogapp.demo.entity.Board;
 import com.blogapp.demo.entity.Grade;
 import com.blogapp.demo.repository.BoardRepository;
 import com.blogapp.demo.repository.GradeRepository;
-import com.blogapp.contact.entity.ContactSubject;
-import com.blogapp.contact.repository.ContactSubjectRepository;
-import com.blogapp.blog.entity.BlogPost;
-import com.blogapp.blog.enums.BlogStatus;
-import com.blogapp.blog.repository.BlogPostRepository;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
@@ -18,6 +20,7 @@ import com.blogapp.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -36,6 +39,8 @@ public class DataInitializer implements CommandLineRunner {
     private final GradeRepository gradeRepository;
     private final ContactSubjectRepository contactSubjectRepository;
     private final BlogPostRepository blogPostRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -120,6 +125,19 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Created {} sample blogs", blogs.size());
         } else {
             log.info("Blogs collection already has data. Skipping.");
+        }
+
+        // ── Admin ──
+        if (adminRepository.count() == 0) {
+            Admin admin = Admin.builder()
+                    .email("admin@astarclasses.com")
+                    .password(passwordEncoder.encode("admin123"))
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            adminRepository.save(admin);
+            log.info("Created primary admin: admin@astarclasses.com / admin123");
+        } else {
+            log.info("Admin collection already has data. Skipping.");
         }
 
         log.info("Database initialization completed successfully!");

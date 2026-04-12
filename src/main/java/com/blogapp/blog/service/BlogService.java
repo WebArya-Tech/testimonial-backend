@@ -33,4 +33,11 @@ public interface BlogService {
     void incrementViewCount(String id);
 
     void deleteBlog(String id);
+
+    // Submission Flow
+    void startSubmission(String email);
+
+    boolean verifySubmission(String email, String otp);
+
+    BlogPost finishSubmission(CreateBlogRequest request);
 }
