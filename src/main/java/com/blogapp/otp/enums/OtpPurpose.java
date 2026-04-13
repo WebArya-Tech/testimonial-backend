@@ -4,5 +4,6 @@ public enum OtpPurpose {
     USER_LOGIN,
     ADMIN_PASSWORD_RESET,
     SCHEDULE_DEMO,
-    BLOG_SUBMISSION
+    BLOG_SUBMISSION,
+    ADMIN_LOGIN
 }

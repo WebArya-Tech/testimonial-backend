@@ -28,4 +28,9 @@ public class BlogReaction {
     private String visitorKey;
 
     private ReactionType type;
+
+    private String ipAddress;
+
+    @org.springframework.data.annotation.CreatedDate
+    private java.time.LocalDateTime createdAt;
 }

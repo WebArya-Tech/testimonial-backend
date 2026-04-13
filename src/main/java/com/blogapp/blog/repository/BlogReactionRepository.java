@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface BlogReactionRepository extends MongoRepository<BlogReaction, String> {
     Optional<BlogReaction> findByBlogIdAndVisitorKey(String blogId, String visitorKey);
     long countByBlogIdAndType(String blogId, com.blogapp.blog.enums.ReactionType type);
+    long countByIpAddressAndCreatedAtAfter(String ipAddress, java.time.LocalDateTime cutoff);
     void deleteByBlogId(String blogId);
 }

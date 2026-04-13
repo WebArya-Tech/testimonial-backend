@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BlogCommentRepository extends MongoRepository<BlogComment, String> {
     Page<BlogComment> findByBlogIdAndStatus(String blogId, String status, Pageable pageable);
+    Page<BlogComment> findByStatus(String status, Pageable pageable);
     long countByBlogIdAndStatus(String blogId, String status);
+    long countByIpAddressAndCreatedAtAfter(String ipAddress, java.time.LocalDateTime cutoff);
     void deleteByBlogId(String blogId);
 }

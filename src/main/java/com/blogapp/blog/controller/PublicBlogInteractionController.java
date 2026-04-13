@@ -37,8 +37,10 @@ public class PublicBlogInteractionController {
     @Operation(summary = "Post a comment", description = "Post a new comment on a blog")
     public ResponseEntity<Map<String, Object>> postComment(
             @PathVariable String blogId,
-            @Valid @RequestBody PostCommentRequest request) {
-        interactionService.postComment(blogId, request);
+            @Valid @RequestBody PostCommentRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ipAddress = httpRequest.getRemoteAddr();
+        interactionService.postComment(blogId, request, ipAddress);
         return ResponseEntity.ok(Map.of("success", true));
     }
 
@@ -54,7 +56,9 @@ public class PublicBlogInteractionController {
     @Operation(summary = "Toggle reaction", description = "Toggle LIKE or DISLIKE for a visitor")
     public ResponseEntity<ReactionStatusResponse> toggleReaction(
             @PathVariable String blogId,
-            @Valid @RequestBody ToggleReactionRequest request) {
-        return ResponseEntity.ok(interactionService.toggleReaction(blogId, request));
+            @Valid @RequestBody ToggleReactionRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ipAddress = httpRequest.getRemoteAddr();
+        return ResponseEntity.ok(interactionService.toggleReaction(blogId, request, ipAddress));
     }
 }

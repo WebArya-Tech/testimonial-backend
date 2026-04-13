@@ -31,6 +31,8 @@ public class BlogComment {
     @Builder.Default
     private String status = "VISIBLE";
 
+    private String ipAddress;
+
     @CreatedDate
     private LocalDateTime createdAt;
 }
