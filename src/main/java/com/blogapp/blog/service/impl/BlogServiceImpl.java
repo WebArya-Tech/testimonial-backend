@@ -9,6 +9,7 @@ import com.blogapp.blog.enums.BlogStatus;
 import com.blogapp.blog.mapper.BlogMapper;
 import com.blogapp.blog.repository.BlogPostRepository;
 import com.blogapp.blog.service.BlogService;
+import com.blogapp.blog.service.BlogSubscriptionService;
 import com.blogapp.common.dto.PageResponse;
 import com.blogapp.common.exception.BadRequestException;
 import com.blogapp.common.exception.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class BlogServiceImpl implements BlogService {
     private final BlogMapper blogMapper;
     private final MongoTemplate mongoTemplate;
     private final com.blogapp.otp.service.OtpService otpService;
+    private final BlogSubscriptionService blogSubscriptionService;
 
     @Override
     public PageResponse<BlogSummaryResponse> getPublishedBlogs(String search, Integer year, Integer month,
@@ -175,7 +177,12 @@ public class BlogServiceImpl implements BlogService {
         blog.setRejectionReason(null);
 
         log.info("Blog approved: {} by admin: {}", id, adminId);
-        return blogPostRepository.save(blog);
+        BlogPost savedBlog = blogPostRepository.save(blog);
+        
+        // Asynchronously notify all active subscribers
+        blogSubscriptionService.notifySubscribersAsync(savedBlog);
+
+        return savedBlog;
     }
 
     @Override

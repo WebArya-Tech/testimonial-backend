@@ -5,5 +5,6 @@ public enum OtpPurpose {
     ADMIN_PASSWORD_RESET,
     SCHEDULE_DEMO,
     BLOG_SUBMISSION,
-    ADMIN_LOGIN
+    ADMIN_LOGIN,
+    BLOG_SUBSCRIBE
 }

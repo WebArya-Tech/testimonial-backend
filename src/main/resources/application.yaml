@@ -62,6 +62,9 @@ app:
     expiry-hours: ${JWT_EXPIRY_HOURS}
   cloudinary:
     url: ${CLOUDINARY_URL}
+  blog:
+    notifications:
+      enabled: ${BLOG_NOTIFICATIONS_ENABLED:false}
 
 # Actuator config
 management:

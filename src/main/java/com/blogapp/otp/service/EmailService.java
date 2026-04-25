@@ -106,4 +106,25 @@ public class EmailService {
                 """.formatted(blogTitle, reason != null ? reason : "Does not meet our content guidelines.");
         sendEmail(to, subject, body);
     }
+    
+    /**
+     * Send new blog post notification to subscribers.
+     */
+    public void sendNewBlogPostNotification(String to, String blogTitle, String blogLink) {
+        String subject = "New Blog Post: " + blogTitle;
+        String body = """
+                <html>
+                <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
+                    <div style="background-color: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto;">
+                        <h2 style="color: #333;">A New Blog Post is Live!</h2>
+                        <p style="color: #555;">Hi there,</p>
+                        <p style="color: #555;">We just published a brand new post that you might find interesting: <strong>%s</strong>.</p>
+                        <a href="%s" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-top: 15px;">Read the Post</a>
+                        <p style="color: #999; font-size: 12px; margin-top: 30px;">You are receiving this because you subscribed to our blog updates.</p>
+                    </div>
+                </body>
+                </html>
+                """.formatted(blogTitle, blogLink);
+        sendEmail(to, subject, body);
+    }
 }
