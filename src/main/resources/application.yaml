@@ -1,5 +1,6 @@
 server:
   port: 8080
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -70,7 +71,7 @@ app:
 management:
   health:
     mail:
-      enabled: false
+      enabled: true
   endpoints:
     web:
       exposure:
