@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // Admin Auth (MUST be before /api/admin/**)
-                        .requestMatchers("/api/admin/auth/**").permitAll()
+                        .requestMatchers("/api/admin/auth/**", "/admin/auth/**").permitAll()
 
                         // Public - Ask System
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()

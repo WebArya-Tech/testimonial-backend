@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping({"/api/admin/auth", "/admin/auth"})
 @RequiredArgsConstructor
 @Tag(name = "Admin Authentication", description = "Admin login and password reset via OTP")
 public class AdminAuthController {
