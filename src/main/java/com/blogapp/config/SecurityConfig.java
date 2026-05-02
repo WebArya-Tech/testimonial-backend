@@ -54,6 +54,27 @@ public class SecurityConfig {
                         // Auth
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // Admin Auth (MUST be before /api/admin/**)
+                        .requestMatchers("/api/admin/auth/**").permitAll()
+
+                        // Public - Ask System
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/answers/question/**").permitAll()
+
+                        // Public - Blogs
+                        .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/reactions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/submissions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/subscriptions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blogs/subscriptions/**").permitAll()
+
+                        // Public - New Endpoints (Demo, Contact)
+                        .requestMatchers("/api/public/**").permitAll()
+
                         // Swagger & Actuator
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
