@@ -39,7 +39,12 @@ public class AuthController {
         userService.findOrCreateByEmail(request.getEmail());
 
         // Send OTP
-        otpService.sendOtp(request.getEmail(), OtpPurpose.USER_LOGIN);
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_LOGIN);
+
+        if (!sent) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "An OTP was already sent recently. Please check your email."));
+        }
 
         return ResponseEntity.ok(Map.of(
                 "message", "OTP sent to " + request.getEmail()));

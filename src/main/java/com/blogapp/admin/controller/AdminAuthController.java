@@ -60,7 +60,10 @@ public class AdminAuthController {
             return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
         }
 
-        otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_PASSWORD_RESET);
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_PASSWORD_RESET);
+        if (!sent) {
+            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
+        }
         return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
     }
 
@@ -89,7 +92,10 @@ public class AdminAuthController {
             return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
         }
 
-        otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_LOGIN);
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_LOGIN);
+        if (!sent) {
+            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
+        }
         return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
     }
 

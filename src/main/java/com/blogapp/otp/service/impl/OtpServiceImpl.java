@@ -36,7 +36,7 @@ public class OtpServiceImpl implements OtpService {
     private int resendCooldownSeconds;
 
     @Override
-    public void sendOtp(String email, OtpPurpose purpose) {
+    public boolean sendOtp(String email, OtpPurpose purpose) {
         // Check resend cooldown
         Optional<OtpVerification> existing = otpRepository
                 .findTopByEmailAndPurposeOrderByCreatedAtDesc(email, purpose);
@@ -45,8 +45,8 @@ public class OtpServiceImpl implements OtpService {
             OtpVerification prev = existing.get();
             LocalDateTime cooldownEnd = prev.getCreatedAt().plusSeconds(resendCooldownSeconds);
             if (LocalDateTime.now().isBefore(cooldownEnd)) {
-                throw new OtpVerificationException(
-                        "Please wait " + resendCooldownSeconds + " seconds before requesting a new OTP.");
+                log.info("OTP cooldown active for {} purpose {}. Reusing existing OTP window.", email, purpose);
+                return false; // Indicates cooldown is active, no new OTP sent
             }
         }
 
@@ -78,6 +78,7 @@ public class OtpServiceImpl implements OtpService {
         emailService.sendEmail(email, subject, body);
 
         log.info("OTP sent to {} for purpose {}", email, purpose);
+        return true;
     }
 
     @Override
