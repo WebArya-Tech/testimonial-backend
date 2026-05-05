@@ -1,6 +1,7 @@
 package com.blogapp.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,8 +9,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,6 +27,12 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${blog.admin.username:admin}")
+    private String adminUsername;
+
+    @Value("${blog.admin.password:admin123}")
+    private String adminPassword;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -37,31 +48,38 @@ public class SecurityConfig {
                         // Public — Teachers
                         .requestMatchers(HttpMethod.GET, "/api/teachers/**").permitAll()
 
-                        // Public — Testimonials (viewing only)
-                        .requestMatchers(HttpMethod.GET, "/api/testimonials/**").permitAll()
-
-                        // Public — Ask System
-                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/answers/question/**").permitAll()
-
-                        // Public - New Endpoints (Demo, Contact)
-                        .requestMatchers("/api/public/**").permitAll()
+                        // Public — Testimonials (submit + view)
+                        .requestMatchers("/api/testimonials/**").permitAll()
 
                         // Auth
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Admin Auth
-                        .requestMatchers("/api/admin/auth/**").permitAll()
+                        // Admin Auth (MUST be before /api/admin/**)
+                        .requestMatchers("/api/admin/auth/**", "/admin/auth/**").permitAll()
+
+                        // Public - Ask System
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/answers/question/**").permitAll()
+
+                        // Public - Blogs
+                        .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/*/reactions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/submissions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/subscriptions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blogs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blogs/subscriptions/**").permitAll()
+
+                        // Public - New Endpoints (Demo, Contact)
+                        .requestMatchers("/api/public/**").permitAll()
 
                         // Swagger & Actuator
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
 
-                        // Authenticated user endpoints (submit answers, testimonials, media, account)
-                        .requestMatchers(HttpMethod.POST, "/api/answers").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/testimonials").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/media/signature").authenticated()
+                        // Authenticated user endpoints
                         .requestMatchers("/api/account/**").authenticated()
 
                         // Admin endpoints
@@ -99,6 +117,16 @@ public class SecurityConfig {
         return source;
     }
 
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails admin = User.builder()
+                .username(adminUsername)
+                .password(passwordEncoder().encode(adminPassword))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping({"/api/admin/auth", "/admin/auth"})
 @RequiredArgsConstructor
 @Tag(name = "Admin Authentication", description = "Admin login and password reset via OTP")
 public class AdminAuthController {
@@ -79,5 +79,37 @@ public class AdminAuthController {
         adminRepository.save(admin);
 
         return ResponseEntity.ok(Map.of("message", "Password has been successfully reset. You can now login."));
+    }
+
+    @PostMapping("/login-otp/request")
+    @Operation(summary = "Request OTP for Admin passwordless login")
+    public ResponseEntity<?> requestLoginOtp(@Valid @RequestBody com.blogapp.admin.dto.request.AdminLoginOtpRequest request) {
+        if (!adminRepository.existsByEmail(request.getEmail())) {
+            // Return OK anyway to prevent email enumeration
+            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+        }
+
+        otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_LOGIN);
+        return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+    }
+
+    @PostMapping("/login-otp/verify")
+    @Operation(summary = "Verify OTP to login admin")
+    public ResponseEntity<?> verifyLoginOtp(@Valid @RequestBody com.blogapp.admin.dto.request.AdminVerifyOtpLoginRequest request) {
+        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.ADMIN_LOGIN);
+        if (!isValid) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
+        }
+
+        Admin admin = adminRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        String token = jwtTokenProvider.generateToken(admin.getId(), admin.getEmail(), "ROLE_ADMIN");
+
+        return ResponseEntity.ok(AdminAuthResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .email(admin.getEmail())
+                .build());
     }
 }

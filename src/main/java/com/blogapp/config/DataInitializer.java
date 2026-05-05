@@ -1,5 +1,16 @@
 package com.blogapp.config;
 
+import com.blogapp.admin.entity.Admin;
+import com.blogapp.admin.repository.AdminRepository;
+import com.blogapp.blog.entity.BlogPost;
+import com.blogapp.blog.enums.BlogStatus;
+import com.blogapp.blog.repository.BlogPostRepository;
+import com.blogapp.contact.entity.ContactSubject;
+import com.blogapp.contact.repository.ContactSubjectRepository;
+import com.blogapp.demo.entity.Board;
+import com.blogapp.demo.entity.Grade;
+import com.blogapp.demo.repository.BoardRepository;
+import com.blogapp.demo.repository.GradeRepository;
 import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
@@ -9,6 +20,7 @@ import com.blogapp.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -23,32 +35,109 @@ public class DataInitializer implements CommandLineRunner {
     private final TeacherRepository teacherRepository;
     private final TestimonialRepository testimonialRepository;
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
+    private final GradeRepository gradeRepository;
+    private final ContactSubjectRepository contactSubjectRepository;
+    private final BlogPostRepository blogPostRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
-
-        if (teacherRepository.count() > 0) {
-            log.info("Database already contains data. Skipping initialization.");
-            return;
-        }
-
-        log.info("Initializing database with seed data...");
+        log.info("Checking database state for initialization...");
 
         // ── Teachers ──
-        List<Teacher> teachers = createSampleTeachers();
-        teacherRepository.saveAll(teachers);
-        log.info("Created {} sample teachers", teachers.size());
+        if (teacherRepository.count() == 0) {
+            List<Teacher> teachers = createSampleTeachers();
+            teacherRepository.saveAll(teachers);
+            log.info("Created {} sample teachers", teachers.size());
 
-        // ── Testimonials ──
-        List<Testimonial> testimonials = createSampleTestimonials(teachers);
-        testimonialRepository.saveAll(testimonials);
-        log.info("Created {} sample testimonials", testimonials.size());
+            // ── Testimonials (Depend on Teachers) ──
+            if (testimonialRepository.count() == 0) {
+                List<Testimonial> testimonials = createSampleTestimonials(teachers);
+                testimonialRepository.saveAll(testimonials);
+                log.info("Created {} sample testimonials", testimonials.size());
+            }
+        } else {
+            log.info("Teachers/Testimonials collection already has data. Skipping.");
+        }
 
         // ── Users ──
         if (userRepository.count() == 0) {
             List<User> users = createSampleUsers();
             userRepository.saveAll(users);
             log.info("Created {} sample users", users.size());
+        } else {
+            log.info("Users collection already has data. Skipping.");
+        }
+
+        // ── Boards ──
+        if (boardRepository.count() == 0) {
+            List<Board> boards = Arrays.asList(
+                    Board.builder().name("CBSE").build(),
+                    Board.builder().name("ICSE").build(),
+                    Board.builder().name("IGCSE").build(),
+                    Board.builder().name("IB").build(),
+                    Board.builder().name("State Board").build()
+            );
+            boardRepository.saveAll(boards);
+            log.info("Created {} sample boards", boards.size());
+        } else {
+            log.info("Boards collection already has data. Skipping.");
+        }
+
+        // ── Grades ──
+        if (gradeRepository.count() == 0) {
+            List<Grade> grades = Arrays.asList(
+                    Grade.builder().name("Grade 6").build(),
+                    Grade.builder().name("Grade 7").build(),
+                    Grade.builder().name("Grade 8").build(),
+                    Grade.builder().name("Grade 9").build(),
+                    Grade.builder().name("Grade 10").build(),
+                    Grade.builder().name("Grade 11").build(),
+                    Grade.builder().name("Grade 12").build()
+            );
+            gradeRepository.saveAll(grades);
+            log.info("Created {} sample grades", grades.size());
+        } else {
+            log.info("Grades collection already has data. Skipping.");
+        }
+
+        // ── Contact Subjects ──
+        if (contactSubjectRepository.count() == 0) {
+            List<ContactSubject> subjects = Arrays.asList(
+                    ContactSubject.builder().name("Course Inquiry").build(),
+                    ContactSubject.builder().name("Fees & Payments").build(),
+                    ContactSubject.builder().name("Technical Support").build(),
+                    ContactSubject.builder().name("Partnership").build(),
+                    ContactSubject.builder().name("Other").build()
+            );
+            contactSubjectRepository.saveAll(subjects);
+            log.info("Created {} sample contact subjects", subjects.size());
+        } else {
+            log.info("Contact Subjects collection already has data. Skipping.");
+        }
+
+        // ── Blogs ──
+        if (blogPostRepository.count() == 0) {
+            List<BlogPost> blogs = createSampleBlogs();
+            blogPostRepository.saveAll(blogs);
+            log.info("Created {} sample blogs", blogs.size());
+        } else {
+            log.info("Blogs collection already has data. Skipping.");
+        }
+
+        // ── Admin ──
+        if (adminRepository.count() == 0) {
+            Admin admin = Admin.builder()
+                    .email("admin@astarclasses.com")
+                    .password(passwordEncoder.encode("admin123"))
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            adminRepository.save(admin);
+            log.info("Created primary admin: admin@astarclasses.com / admin123");
+        } else {
+            log.info("Admin collection already has data. Skipping.");
         }
 
         log.info("Database initialization completed successfully!");
@@ -146,6 +235,55 @@ public class DataInitializer implements CommandLineRunner {
                         .email("bob@example.com")
                         .emailVerifiedAt(LocalDateTime.now())
                         .createdAt(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    private List<BlogPost> createSampleBlogs() {
+        return Arrays.asList(
+                BlogPost.builder()
+                        .title("How to Prepare for IGCSE Physics")
+                        .slug("how-to-prepare-for-igcse-physics")
+                        .excerpt("A comprehensive guide to acing IGCSE Physics exams.")
+                        .contentHtml("<p>IGCSE Physics can be challenging, but with the right approach, you can master it...</p>")
+                        .featuredImageUrl("https://images.unsplash.com/photo-1532012197367-bf84dca3c2aa?w=800")
+                        .authorName("Dr. Priya Sharma")
+                        .authorEmail("priya@example.com")
+                        .status(BlogStatus.PUBLISHED)
+                        .publishedAt(LocalDateTime.now())
+                        .year(LocalDateTime.now().getYear())
+                        .month(LocalDateTime.now().getMonthValue())
+                        .tags(Arrays.asList("physics", "igcse", "exam-prep"))
+                        .viewsCount(150)
+                        .likesCount(45)
+                        .build(),
+                BlogPost.builder()
+                        .title("The Secrets of Organic Chemistry")
+                        .slug("secrets-of-organic-chemistry")
+                        .excerpt("Organic chemistry made simple with these 5 tricks.")
+                        .contentHtml("<p>Many students fear organic chemistry, but it's all about understanding patterns...</p>")
+                        .featuredImageUrl("https://images.unsplash.com/photo-1541339907198-e08759df9a65?w=800")
+                        .authorName("Vikram Desai")
+                        .authorEmail("vikram@example.com")
+                        .status(BlogStatus.PUBLISHED)
+                        .publishedAt(LocalDateTime.now().minusDays(2))
+                        .year(LocalDateTime.now().minusDays(2).getYear())
+                        .month(LocalDateTime.now().minusDays(2).getMonthValue())
+                        .tags(Arrays.asList("chemistry", "organic", "study-tips"))
+                        .viewsCount(85)
+                        .likesCount(20)
+                        .build(),
+                BlogPost.builder()
+                        .title("Top 10 English Literature Books")
+                        .slug("top-10-english-literature-books")
+                        .excerpt("Discover the classics that every student should read.")
+                        .contentHtml("<p>Literature opens up new worlds. Here are our top 10 picks...</p>")
+                        .featuredImageUrl("https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800")
+                        .authorName("Ananya Iyer")
+                        .authorEmail("ananya@example.com")
+                        .status(BlogStatus.PENDING)
+                        .submittedAt(LocalDateTime.now().minusHours(5))
+                        .tags(Arrays.asList("english", "literature", "books"))
                         .build()
         );
     }
