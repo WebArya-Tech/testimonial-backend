@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class AuthController {
     @Operation(summary = "Start login — sends OTP to the given email")
     public ResponseEntity<Map<String, String>> startLogin(
             @Valid @RequestBody AuthStartRequest request) {
+        log.info("Received login start request for email: {}", request.getEmail());
 
         // Ensure user record exists (idempotent)
         userService.findOrCreateByEmail(request.getEmail());
@@ -42,10 +45,12 @@ public class AuthController {
         boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_LOGIN);
 
         if (!sent) {
+            log.info("OTP cooldown active, not sending a new OTP to: {}", request.getEmail());
             return ResponseEntity.ok(Map.of(
                     "message", "An OTP was already sent recently. Please check your email."));
         }
 
+        log.info("Successfully initiated OTP for email: {}", request.getEmail());
         return ResponseEntity.ok(Map.of(
                 "message", "OTP sent to " + request.getEmail()));
     }
@@ -54,13 +59,17 @@ public class AuthController {
     @Operation(summary = "Verify OTP — returns JWT token and user info")
     public ResponseEntity<AuthResponse> verifyOtp(
             @Valid @RequestBody AuthVerifyRequest request) {
+        log.info("Received OTP verification request for email: {}", request.getEmail());
 
         boolean valid = otpService.verifyOtp(
                 request.getEmail(), request.getOtp(), OtpPurpose.USER_LOGIN);
 
         if (!valid) {
+            log.warn("Invalid OTP attempt for email: {}", request.getEmail());
             return ResponseEntity.badRequest().build();
         }
+
+        log.info("OTP verified successfully for email: {}. Generating session token.", request.getEmail());
 
         // Mark email as verified and update profile if provided
         User user = userService.findOrCreateByEmail(request.getEmail());

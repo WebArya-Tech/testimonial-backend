@@ -5,12 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,6 +30,10 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        // Inject Correlation ID
+        String correlationId = UUID.randomUUID().toString().substring(0, 8);
+        MDC.put("correlationId", correlationId);
 
         long startTime = System.currentTimeMillis();
         String method = request.getMethod();
@@ -52,6 +58,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             } else {
                 log.info("<-- Completed Request: [{}] {} with status {} in {} ms", method, fullUri, status, duration);
             }
+            // Clear MDC
+            MDC.remove("correlationId");
         }
     }
 }

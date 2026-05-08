@@ -4,11 +4,13 @@ import com.blogapp.user.entity.User;
 import com.blogapp.user.repository.UserRepository;
 import com.blogapp.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -17,12 +19,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findOrCreateByEmail(String email) {
-        return userRepository.findByEmail(email.toLowerCase().trim())
-                .orElseGet(() -> userRepository.save(
-                        User.builder()
-                                .email(email.toLowerCase().trim())
-                                .createdAt(LocalDateTime.now())
-                                .build()));
+        String cleanEmail = email.toLowerCase().trim();
+        return userRepository.findByEmail(cleanEmail)
+                .map(user -> {
+                    log.info("Found existing user with email: {}", cleanEmail);
+                    return user;
+                })
+                .orElseGet(() -> {
+                    log.info("No existing user found for email: {}. Creating new user record.", cleanEmail);
+                    return userRepository.save(
+                            User.builder()
+                                    .email(cleanEmail)
+                                    .createdAt(LocalDateTime.now())
+                                    .build());
+                });
     }
 
     @Override
@@ -39,7 +49,14 @@ public class UserServiceImpl implements UserService {
     public User markEmailVerified(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        user.setEmailVerifiedAt(LocalDateTime.now());
+        
+        if (user.getEmailVerifiedAt() == null) {
+            user.setEmailVerifiedAt(LocalDateTime.now());
+            log.info("Email verified for user ID: {}", userId);
+        } else {
+            log.debug("Email already verified for user ID: {}", userId);
+        }
+        
         return userRepository.save(user);
     }
 
@@ -51,6 +68,8 @@ public class UserServiceImpl implements UserService {
             user.setName(name);
         if (mobile != null)
             user.setMobile(mobile);
+            
+        log.info("Updated profile for user ID: {}", userId);
         return userRepository.save(user);
     }
 }
