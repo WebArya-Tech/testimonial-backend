@@ -23,7 +23,13 @@ public class PublicBlogSubscriptionController {
     @Operation(summary = "Request OTP for subscription", description = "Sends an OTP to the provided email address")
     public ResponseEntity<Map<String, Object>> requestOtp(
             @Valid @RequestBody SubscriptionRequest.Start request) {
-        subscriptionService.requestOtp(request.getEmail(), request.isResend());
+        boolean sent = subscriptionService.requestOtp(request.getEmail(), request.isResend());
+        if (!sent) {
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "An OTP was already sent recently. Please check your email."
+            ));
+        }
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "OTP sent to " + request.getEmail()

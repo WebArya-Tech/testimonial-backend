@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 public interface DemoScheduleService {
 
-    void sendOtp(SendOtpRequest request);
+    boolean sendOtp(SendOtpRequest request);
 
     ScheduleDemoResponse submitScheduleDemo(ScheduleDemoRequest request);
 

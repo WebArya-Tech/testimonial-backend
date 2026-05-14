@@ -35,7 +35,7 @@ public interface BlogService {
     void deleteBlog(String id);
 
     // Submission Flow
-    void startSubmission(String email, boolean isResend);
+    boolean startSubmission(String email, boolean isResend);
 
     boolean verifySubmission(String email, String otp);
 
