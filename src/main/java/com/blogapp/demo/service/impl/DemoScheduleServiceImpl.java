@@ -83,6 +83,18 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 request.getPreferredTime()
         );
 
+        // Send confirmation to the user
+        log.info("Sending Schedule Demo confirmation to user: {}", request.getEmailId());
+        emailService.sendScheduleDemoUserConfirmation(
+                request.getEmailId(),
+                request.getStudentName(),
+                request.getParentName(),
+                board.getName(),
+                grade.getName(),
+                request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
+                request.getPreferredTime()
+        );
+
         return demoMapper.toScheduleDemoResponse(schedule, board, grade);
     }
 

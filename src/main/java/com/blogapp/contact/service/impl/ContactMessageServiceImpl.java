@@ -56,6 +56,15 @@ public class ContactMessageServiceImpl implements ContactMessageService {
                 request.getMessageText()
         );
 
+        // Send confirmation to the user
+        log.info("Sending Contact Us confirmation to user: {}", request.getEmailAddress());
+        emailService.sendContactUsUserConfirmation(
+                request.getEmailAddress(),
+                request.getFullName(),
+                subject.getName(),
+                request.getMessageText()
+        );
+
         return contactMapper.toContactMessageResponse(message, subject);
     }
 
