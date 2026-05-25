@@ -38,8 +38,11 @@ public class EmailService {
             mailSender.send(message);
             log.info("Email sent to {} — subject: {}", to, subject);
         } catch (MessagingException e) {
-            log.error("Failed to send email to {}: {}", to, e.getMessage());
-            log.warn("Email delivery failed but operation continues.");
+            log.error("Failed to send email to {} (subject: {}): {}", to, subject, e.getMessage(), e);
+            throw new RuntimeException("Failed to send email to " + to + ": " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error sending email to {} (subject: {}): {}", to, subject, e.getMessage(), e);
+            throw new RuntimeException("Unexpected error sending email to " + to + ": " + e.getMessage(), e);
         }
     }
 
