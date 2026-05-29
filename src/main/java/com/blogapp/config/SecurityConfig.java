@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -72,6 +74,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/blogs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/blogs/subscriptions/**").permitAll()
 
+                        // Student Reviews — public listing, auth-required submission
+                        .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").permitAll()
+                        // POST /api/reviews and GET /api/reviews/me require authentication
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/me").authenticated()
+
+                        // Running Classes — public browsing, auth-required enrollment
+                        .requestMatchers(HttpMethod.GET, "/api/classes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/classes/{id}").permitAll()
+                        // POST /api/classes/{id}/enroll, GET /api/classes/my-enrollments,
+                        // POST /api/classes/enrollments/{id}/cancel → require authentication
+
                         // Public - New Endpoints (Demo, Contact)
                         .requestMatchers("/api/public/**").permitAll()
 
@@ -82,8 +97,9 @@ public class SecurityConfig {
                         // Authenticated user endpoints
                         .requestMatchers("/api/account/**").authenticated()
 
-                        // Admin endpoints
+                        // Admin endpoints — cover BOTH /api/admin/** and /admin/api/** prefixes
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/api/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

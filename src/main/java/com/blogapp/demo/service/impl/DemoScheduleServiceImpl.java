@@ -15,6 +15,7 @@ import com.blogapp.demo.repository.DemoScheduleRepository;
 import com.blogapp.demo.repository.GradeRepository;
 import com.blogapp.demo.service.DemoScheduleService;
 import com.blogapp.otp.enums.OtpPurpose;
+import com.blogapp.otp.service.EmailService;
 import com.blogapp.otp.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +38,12 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
     private final GradeRepository gradeRepository;
     private final DemoMapper demoMapper;
     private final OtpService otpService;
+    private final EmailService emailService;
 
     @Override
-    public void sendOtp(SendOtpRequest request) {
+    public boolean sendOtp(SendOtpRequest request) {
         log.info("Sending schedule demo OTP to email: {}", request.getEmail());
-        otpService.sendOtp(request.getEmail(), OtpPurpose.SCHEDULE_DEMO, false);
+        return otpService.sendOtp(request.getEmail(), OtpPurpose.SCHEDULE_DEMO, request.isResend());
     }
 
     @Override
@@ -67,6 +69,32 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 .build();
 
         schedule = scheduleRepository.save(schedule);
+
+        // Notify admin via email
+        log.info("Sending Schedule Demo admin notification for: {}", request.getStudentName());
+        emailService.sendScheduleDemoAdminNotification(
+                request.getStudentName(),
+                request.getParentName(),
+                request.getEmailId(),
+                request.getMobileNumber(),
+                board.getName(),
+                grade.getName(),
+                request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
+                request.getPreferredTime()
+        );
+
+        // Send confirmation to the user
+        log.info("Sending Schedule Demo confirmation to user: {}", request.getEmailId());
+        emailService.sendScheduleDemoUserConfirmation(
+                request.getEmailId(),
+                request.getStudentName(),
+                request.getParentName(),
+                board.getName(),
+                grade.getName(),
+                request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
+                request.getPreferredTime()
+        );
+
         return demoMapper.toScheduleDemoResponse(schedule, board, grade);
     }
 

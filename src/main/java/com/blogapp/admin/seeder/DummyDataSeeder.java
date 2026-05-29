@@ -11,6 +11,13 @@ import com.blogapp.teacher.entity.Teacher;
 import com.blogapp.teacher.repository.TeacherRepository;
 import com.blogapp.testimonial.entity.Testimonial;
 import com.blogapp.testimonial.repository.TestimonialRepository;
+import com.blogapp.runningclass.entity.RunningClass;
+import com.blogapp.runningclass.entity.Enrollment;
+import com.blogapp.runningclass.enums.ClassCategory;
+import com.blogapp.runningclass.enums.ClassStatus;
+import com.blogapp.runningclass.enums.EnrollmentStatus;
+import com.blogapp.runningclass.repository.RunningClassRepository;
+import com.blogapp.runningclass.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -28,6 +35,8 @@ public class DummyDataSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final RunningClassRepository runningClassRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Override
     public void run(String... args) {
@@ -121,5 +130,137 @@ public class DummyDataSeeder implements CommandLineRunner {
         
         answerRepository.save(approvedAnswer);
         answerRepository.save(pendingAnswer);
+
+        // 6. Seed Running Classes
+        RunningClass mathClass = RunningClass.builder()
+                .title("Advanced Calculus 101")
+                .description("A comprehensive course on multivariable calculus.")
+                .category(ClassCategory.UNDERGRADUATE)
+                .schedule("Mon, Wed, Fri - 6:00 PM IST")
+                .batchSize("12-15")
+                .instructorName("Prof. Alan Math")
+                .feeInfo("₹5,000 / month")
+                .startDate(now.plusDays(10))
+                .endDate(now.plusMonths(3))
+                .status(ClassStatus.ACTIVE)
+                .maxCapacity(20)
+                .enrolledCount(1)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        mathClass = runningClassRepository.save(mathClass);
+
+        // 7. Seed Enrollments
+        Enrollment pendingEnrollment = Enrollment.builder()
+                .classId(mathClass.getId())
+                .userId("seed-student-1")
+                .studentName("Alice Smith")
+                .parentName("Bob Smith")
+                .email("alice@example.com")
+                .mobileNumber("9876543210")
+                .gradeOrClass("B.Sc 1st Year")
+                .schoolOrCollege("MIT")
+                .preferredBatch("Evening")
+                .message("Looking forward to learning!")
+                .status(EnrollmentStatus.PENDING)
+                .submittedAt(now)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        Enrollment confirmedEnrollment = Enrollment.builder()
+                .classId(mathClass.getId())
+                .userId("seed-student-2")
+                .studentName("John Doe")
+                .parentName("Jane Doe")
+                .email("john@example.com")
+                .mobileNumber("1234567890")
+                .gradeOrClass("B.Sc 2nd Year")
+                .schoolOrCollege("Stanford")
+                .preferredBatch("Morning")
+                .status(EnrollmentStatus.CONFIRMED)
+                .submittedAt(now.minusDays(2))
+                .confirmedAt(now)
+                .confirmedByAdminId("seed-admin-123")
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        enrollmentRepository.save(pendingEnrollment);
+        enrollmentRepository.save(confirmedEnrollment);
+
+        // More Running Classes
+        RunningClass dataScienceClass = RunningClass.builder()
+                .title("Data Science Bootcamp")
+                .description("Intensive 6-month bootcamp covering Python, ML, and Deep Learning.")
+                .category(ClassCategory.PROFESSIONAL)
+                .schedule("Weekends - 10:00 AM to 2:00 PM IST")
+                .batchSize("30-40")
+                .instructorName("Dr. Jane Smith")
+                .feeInfo("₹15,000 / month")
+                .startDate(now.plusDays(20))
+                .endDate(now.plusMonths(6))
+                .status(ClassStatus.ACTIVE)
+                .maxCapacity(40)
+                .enrolledCount(0)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        dataScienceClass = runningClassRepository.save(dataScienceClass);
+
+        RunningClass physicsClass = RunningClass.builder()
+                .title("Quantum Physics Fundamentals")
+                .description("Introduction to quantum mechanics and particle physics.")
+                .category(ClassCategory.POST_GRADUATE)
+                .schedule("Tue, Thu - 5:00 PM IST")
+                .batchSize("15-20")
+                .instructorName("Prof. Richard Feynman")
+                .feeInfo("₹8,000 / month")
+                .startDate(now.minusMonths(1))
+                .endDate(now.plusMonths(2))
+                .status(ClassStatus.ACTIVE)
+                .maxCapacity(25)
+                .enrolledCount(1)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        physicsClass = runningClassRepository.save(physicsClass);
+
+        RunningClass legacyClass = RunningClass.builder()
+                .title("Legacy Java Programming")
+                .description("Old course for Java 8 concepts. Currently not taking enrollments.")
+                .category(ClassCategory.UNDERGRADUATE)
+                .schedule("N/A")
+                .batchSize("20")
+                .instructorName("Mr. Gosling")
+                .feeInfo("₹3,000 / month")
+                .startDate(now.minusYears(1))
+                .endDate(now.minusMonths(6))
+                .status(ClassStatus.COMPLETED)
+                .maxCapacity(20)
+                .enrolledCount(20)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        runningClassRepository.save(legacyClass);
+
+        // Enrollment for Physics
+        Enrollment rejectedEnrollment = Enrollment.builder()
+                .classId(physicsClass.getId())
+                .userId("seed-student-3")
+                .studentName("Tom Hacker")
+                .parentName("Jerry Hacker")
+                .email("tom@example.com")
+                .mobileNumber("1122334455")
+                .gradeOrClass("M.Sc 1st Year")
+                .schoolOrCollege("Caltech")
+                .preferredBatch("Any")
+                .status(EnrollmentStatus.REJECTED)
+                .rejectionReason("Incomplete prerequisites.")
+                .submittedAt(now.minusDays(5))
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        enrollmentRepository.save(rejectedEnrollment);
     }
 }

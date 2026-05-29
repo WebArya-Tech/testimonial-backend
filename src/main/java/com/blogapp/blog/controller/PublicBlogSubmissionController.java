@@ -30,7 +30,13 @@ public class PublicBlogSubmissionController {
     @PostMapping("/start")
     @Operation(summary = "Start submission", description = "Sends an OTP to the author's email to verify ownership before submission.")
     public ResponseEntity<Map<String, Object>> startSubmission(@Valid @RequestBody SubmissionRequest.Start request) {
-        blogService.startSubmission(request.getAuthorEmail());
+        boolean sent = blogService.startSubmission(request.getAuthorEmail(), request.isResend());
+        if (!sent) {
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "An OTP was already sent recently. Please check your email."
+            ));
+        }
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "OTP sent to " + request.getAuthorEmail()

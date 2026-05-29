@@ -41,7 +41,10 @@ public class PublicDemoController {
     @PostMapping("/schedule/send-otp")
     @Operation(summary = "Send OTP to user's email for demo scheduling")
     public ResponseEntity<Map<String, String>> sendOtp(@Valid @RequestBody SendOtpRequest request) {
-        scheduleService.sendOtp(request);
+        boolean sent = scheduleService.sendOtp(request);
+        if (!sent) {
+            return ResponseEntity.ok(Map.of("message", "An OTP was already sent recently. Please check your email."));
+        }
         return ResponseEntity.ok(Map.of("message", "OTP sent successfully to email"));
     }
 
