@@ -91,6 +91,10 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
             formattedTime = "Not specified";
         }
 
+        String formattedDate = request.getPreferredDate() != null 
+                ? request.getPreferredDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
+                : "Not specified";
+
         // Notify admin via email
         log.info("Sending Schedule Demo admin notification for: {}", request.getStudentName());
         emailService.sendScheduleDemoAdminNotification(
@@ -100,7 +104,7 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 request.getMobileNumber(),
                 board.getName(),
                 grade.getName(),
-                request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
+                formattedDate,
                 formattedTime
         );
 
@@ -112,7 +116,7 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 request.getParentName(),
                 board.getName(),
                 grade.getName(),
-                request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
+                formattedDate,
                 formattedTime
         );
 
