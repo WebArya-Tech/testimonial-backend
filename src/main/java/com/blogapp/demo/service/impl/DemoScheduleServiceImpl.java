@@ -1,5 +1,6 @@
 package com.blogapp.demo.service.impl;
 
+import com.blogapp.common.exception.RateLimitException;
 import com.blogapp.common.exception.ResourceNotFoundException;
 import com.blogapp.demo.dto.request.CancelDemoRequest;
 import com.blogapp.demo.dto.request.ScheduleDemoRequest;
@@ -49,6 +50,12 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
     @Override
     @Transactional
     public ScheduleDemoResponse submitScheduleDemo(ScheduleDemoRequest request) {
+        java.time.LocalDateTime twentyFourHoursAgo = java.time.LocalDateTime.now().minusHours(24);
+        long recentRequests = scheduleRepository.countByEmailIdAndCreatedAtAfter(request.getEmailId(), twentyFourHoursAgo);
+        if (recentRequests >= 10) {
+            throw new RateLimitException("You have reached the maximum number of Demo requests for today. Please try again later.");
+        }
+
         // Verify OTP
         otpService.verifyOtp(request.getEmailId(), request.getOtp(), OtpPurpose.SCHEDULE_DEMO);
 
