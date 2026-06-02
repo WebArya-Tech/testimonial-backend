@@ -1,5 +1,6 @@
 package com.blogapp.demo.service.impl;
 
+import com.blogapp.common.exception.RateLimitException;
 import com.blogapp.common.exception.ResourceNotFoundException;
 import com.blogapp.demo.dto.request.CancelDemoRequest;
 import com.blogapp.demo.dto.request.ScheduleDemoRequest;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -49,6 +52,12 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
     @Override
     @Transactional
     public ScheduleDemoResponse submitScheduleDemo(ScheduleDemoRequest request) {
+        java.time.LocalDateTime twentyFourHoursAgo = java.time.LocalDateTime.now().minusHours(24);
+        long recentRequests = scheduleRepository.countByEmailIdAndCreatedAtAfter(request.getEmailId(), twentyFourHoursAgo);
+        if (recentRequests >= 10) {
+            throw new RateLimitException("You have reached the maximum number of Demo requests for today. Please try again later.");
+        }
+
         // Verify OTP
         otpService.verifyOtp(request.getEmailId(), request.getOtp(), OtpPurpose.SCHEDULE_DEMO);
 
@@ -70,6 +79,18 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
 
         schedule = scheduleRepository.save(schedule);
 
+        String formattedTime = request.getPreferredTime();
+        if (formattedTime != null && !formattedTime.trim().isEmpty()) {
+            try {
+                LocalTime time = LocalTime.parse(formattedTime);
+                formattedTime = time.format(DateTimeFormatter.ofPattern("hh:mm a"));
+            } catch (Exception e) {
+                log.warn("Could not format time: {}", formattedTime);
+            }
+        } else {
+            formattedTime = "Not specified";
+        }
+
         // Notify admin via email
         log.info("Sending Schedule Demo admin notification for: {}", request.getStudentName());
         emailService.sendScheduleDemoAdminNotification(
@@ -80,7 +101,7 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 board.getName(),
                 grade.getName(),
                 request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
-                request.getPreferredTime()
+                formattedTime
         );
 
         // Send confirmation to the user
@@ -92,7 +113,7 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
                 board.getName(),
                 grade.getName(),
                 request.getPreferredDate() != null ? request.getPreferredDate().toString() : "Not specified",
-                request.getPreferredTime()
+                formattedTime
         );
 
         return demoMapper.toScheduleDemoResponse(schedule, board, grade);

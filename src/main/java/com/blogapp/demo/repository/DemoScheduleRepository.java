@@ -14,4 +14,5 @@ public interface DemoScheduleRepository extends MongoRepository<DemoSchedule, St
     Page<DemoSchedule> findByStatus(DemoScheduleStatus status, Pageable pageable);
     Page<DemoSchedule> findByPreferredDate(LocalDate preferredDate, Pageable pageable);
     Page<DemoSchedule> findByStatusAndPreferredDate(DemoScheduleStatus status, LocalDate preferredDate, Pageable pageable);
+    long countByEmailIdAndCreatedAtAfter(String emailId, java.time.LocalDateTime createdAt);
 }
