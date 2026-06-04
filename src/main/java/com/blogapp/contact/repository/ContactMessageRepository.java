@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface ContactMessageRepository extends MongoRepository<ContactMessage, String> {
     Page<ContactMessage> findByStatus(ContactStatus status, Pageable pageable);
+    long countByEmailAddressAndCreatedAtAfter(String emailAddress, LocalDateTime createdAt);
 }

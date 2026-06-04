@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +34,12 @@ public class AdminDemoController {
     private final DemoScheduleService scheduleService;
 
     // --- Boards ---
+
+    @GetMapping("/settings/boards")
+    @Operation(summary = "Get all board offerings")
+    public ResponseEntity<List<BoardResponse>> getAllBoards() {
+        return ResponseEntity.ok(settingsService.getAllBoards());
+    }
 
     @PostMapping("/settings/boards")
     @Operation(summary = "Create a new board offering")
@@ -48,6 +55,12 @@ public class AdminDemoController {
     }
 
     // --- Grades ---
+
+    @GetMapping("/settings/grades")
+    @Operation(summary = "Get all grade offerings")
+    public ResponseEntity<List<GradeResponse>> getAllGrades() {
+        return ResponseEntity.ok(settingsService.getAllGrades());
+    }
 
     @PostMapping("/settings/grades")
     @Operation(summary = "Create a new grade offering")

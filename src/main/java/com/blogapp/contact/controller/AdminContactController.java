@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,6 +29,12 @@ public class AdminContactController {
     private final ContactMessageService messageService;
 
     // --- Subjects ---
+
+    @GetMapping("/subjects")
+    @Operation(summary = "Get all contact subjects")
+    public ResponseEntity<List<SubjectResponse>> getAllSubjects() {
+        return ResponseEntity.ok(settingsService.getAllSubjects());
+    }
 
     @PostMapping("/subjects")
     @Operation(summary = "Create a new contact subject for the dropdown")

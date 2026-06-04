@@ -1,5 +1,6 @@
 package com.blogapp.contact.service.impl;
 
+import com.blogapp.common.exception.RateLimitException;
 import com.blogapp.common.exception.ResourceNotFoundException;
 import com.blogapp.contact.dto.request.ContactMessageRequest;
 import com.blogapp.contact.dto.response.ContactMessageResponse;
@@ -33,6 +34,12 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     @Override
     @Transactional
     public ContactMessageResponse submitMessage(ContactMessageRequest request) {
+        java.time.LocalDateTime twentyFourHoursAgo = java.time.LocalDateTime.now().minusHours(24);
+        long recentRequests = messageRepository.countByEmailAddressAndCreatedAtAfter(request.getEmailAddress(), twentyFourHoursAgo);
+        if (recentRequests >= 10) {
+            throw new RateLimitException("You have reached the maximum number of Contact Us requests for today. Please try again later.");
+        }
+
         ContactSubject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
 
