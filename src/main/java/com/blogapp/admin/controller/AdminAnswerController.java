@@ -1,16 +1,21 @@
 package com.blogapp.admin.controller;
 
+import com.blogapp.answer.dto.AnswerRequest;
 import com.blogapp.answer.dto.AnswerResponse;
 import com.blogapp.answer.enums.AnswerStatus;
 import com.blogapp.answer.service.AnswerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/admin/answers")
@@ -21,6 +26,15 @@ import org.springframework.web.bind.annotation.*;
 public class AdminAnswerController {
 
     private final AnswerService answerService;
+
+    @PostMapping
+    @Operation(summary = "Submit a new answer directly as admin (starts as APPROVED)")
+    public ResponseEntity<AnswerResponse> submitAdminAnswer(
+            @Valid @RequestBody AnswerRequest request, 
+            Principal principal) {
+        String adminId = principal != null ? principal.getName() : "admin";
+        return new ResponseEntity<>(answerService.submitAdminAnswer(request, adminId), HttpStatus.CREATED);
+    }
 
     @GetMapping
     @Operation(summary = "List all answers with optional filtering by status/questionId")

@@ -66,6 +66,26 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    public AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId) {
+        if (!questionRepository.existsById(request.getQuestionId())) {
+            throw new ResourceNotFoundException("Question not found");
+        }
+
+        Answer answer = Answer.builder()
+                .questionId(request.getQuestionId())
+                .userId(adminId)
+                .authorName("Admin")
+                .contentHtml(HtmlSanitizer.sanitize(request.getContentHtml()))
+                .status(AnswerStatus.APPROVED)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Answer saved = answerRepository.save(answer);
+        return mapToResponse(saved);
+    }
+
+    @Override
     public Page<AnswerResponse> getAllAnswers(AnswerStatus status, String questionId, int page, int size, String sort, String direction) {
         Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));

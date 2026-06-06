@@ -12,6 +12,7 @@ public interface AnswerService {
     List<AnswerResponse> getApprovedAnswersByQuestionId(String questionId);
     
     // Admin methods
+    AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId);
     Page<AnswerResponse> getAllAnswers(AnswerStatus status, String questionId, int page, int size, String sort, String direction);
     AnswerResponse updateAnswerStatus(String id, AnswerStatus status, String rejectionReason);
     void deleteAnswer(String id);
