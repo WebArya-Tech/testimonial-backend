@@ -34,12 +34,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse submitReview(CreateReviewRequest request, String userId, String email) {
-        // Prevent more than one active (non-rejected) review per user
-        boolean hasActive = reviewRepository.existsByUserIdAndStatusNot(userId, ReviewStatus.REJECTED);
-        if (hasActive) {
+        // Prevent more than one PENDING review per user to avoid spamming the admin
+        boolean hasPending = reviewRepository.existsByUserIdAndStatus(userId, ReviewStatus.PENDING);
+        if (hasPending) {
             throw new BadRequestException(
-                    "You already have a review pending or published. " +
-                    "You may submit a new one only after your previous review is rejected.");
+                    "You already have a review pending approval. " +
+                    "Please wait for it to be reviewed before submitting a new one.");
         }
 
         StudentReview review = reviewMapper.toEntity(request, userId, email);

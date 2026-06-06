@@ -18,6 +18,9 @@ public interface StudentReviewRepository extends MongoRepository<StudentReview, 
     /** Fetch all published reviews – used by public listing */
     Page<StudentReview> findByStatusOrderByPublishedAtDesc(ReviewStatus status, Pageable pageable);
 
+    /** Check if a user has a specific review status (e.g., to prevent multiple pending reviews) */
+    boolean existsByUserIdAndStatus(String userId, ReviewStatus status);
+    
     /** Check if a user has already submitted a review (one per user) */
     boolean existsByUserIdAndStatusNot(String userId, ReviewStatus status);
 

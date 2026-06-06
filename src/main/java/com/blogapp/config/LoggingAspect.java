@@ -45,7 +45,13 @@ public class LoggingAspect {
             
             return result;
         } catch (IllegalArgumentException e) {
-            log.error("Illegal argument: {} in {}.{}()", e.getMessage(), className, methodName);
+            log.warn("Illegal argument: {} in {}.{}()", e.getMessage(), className, methodName);
+            throw e;
+        } catch (com.blogapp.common.exception.BadRequestException |
+                 com.blogapp.common.exception.ResourceNotFoundException |
+                 com.blogapp.common.exception.RateLimitException |
+                 com.blogapp.common.exception.OtpVerificationException e) {
+            log.warn("Business exception in {}.{}() with message = '{}'", className, methodName, e.getMessage());
             throw e;
         } catch (Throwable e) {
             log.error("Exception in {}.{}() with cause = '{}' and exception = '{}'", className, methodName,
