@@ -31,8 +31,8 @@ public class AdminAnswerController {
     @Operation(summary = "Submit a new answer directly as admin (starts as APPROVED)")
     public ResponseEntity<AnswerResponse> submitAdminAnswer(
             @Valid @RequestBody AnswerRequest request, 
-            Principal principal) {
-        String adminId = principal != null ? principal.getName() : "admin";
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.blogapp.admin.entity.Admin admin) {
+        String adminId = admin != null ? admin.getId() : "admin";
         return new ResponseEntity<>(answerService.submitAdminAnswer(request, adminId), HttpStatus.CREATED);
     }
 

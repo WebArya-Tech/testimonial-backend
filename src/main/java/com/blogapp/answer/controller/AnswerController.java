@@ -34,10 +34,9 @@ public class AnswerController {
     @Operation(summary = "Submit a new answer (requires authentication, starts as PENDING)")
     public ResponseEntity<AnswerResponse> submitAnswer(
             @Valid @RequestBody AnswerRequest request, 
-            Principal principal) {
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.blogapp.user.entity.User user) {
         
-        // principal.getName() is typically the user ID set by the JwtAuthenticationFilter
-        String userId = principal.getName();
+        String userId = user.getId();
         return new ResponseEntity<>(answerService.submitAnswer(request, userId), HttpStatus.CREATED);
     }
 }

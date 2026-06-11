@@ -27,8 +27,9 @@ public class AdminQuestionController {
 
     @PostMapping
     @Operation(summary = "Create a new question")
-    public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest request, Principal principal) {
-        String adminId = principal != null ? principal.getName() : "admin";
+    public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest request, 
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.blogapp.admin.entity.Admin admin) {
+        String adminId = admin != null ? admin.getId() : "admin";
         return new ResponseEntity<>(questionService.createQuestion(request, adminId), HttpStatus.CREATED);
     }
 
@@ -37,8 +38,8 @@ public class AdminQuestionController {
     public ResponseEntity<QuestionResponse> updateQuestion(
             @PathVariable String id, 
             @Valid @RequestBody QuestionRequest request,
-            Principal principal) {
-        String adminId = principal != null ? principal.getName() : "admin";
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.blogapp.admin.entity.Admin admin) {
+        String adminId = admin != null ? admin.getId() : "admin";
         return ResponseEntity.ok(questionService.updateQuestion(id, request, adminId));
     }
 
