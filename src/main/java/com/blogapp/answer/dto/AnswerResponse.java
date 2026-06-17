@@ -15,6 +15,8 @@ public class AnswerResponse {
     private String authorName;
     private String contentHtml;
     private AnswerStatus status;
+    private java.util.List<String> attachments;
+    private boolean isCorrect;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

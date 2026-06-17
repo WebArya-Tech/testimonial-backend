@@ -39,6 +39,13 @@ services:
       # Cloudinary Configuration
       - CLOUDINARY_URL=${CLOUDINARY_URL}
 
+      # Minio Configuration
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - MINIO_MAX_FILE_SIZE_MB=${MINIO_MAX_FILE_SIZE_MB}
+
     # Load environment variables from .env file
     env_file:
       - .env
@@ -49,3 +56,24 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    depends_on:
+      - minio
+
+  # ==============================
+  # Minio Object Storage Service
+  # ==============================
+  minio:
+    image: minio/minio:latest
+    container_name: astar-minio
+    ports:
+      - "9005:9000" # API Port (changed from 9000 to avoid conflict)
+      - "9006:9001" # Console Port (changed from 9001 to avoid conflict)
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  minio_data:

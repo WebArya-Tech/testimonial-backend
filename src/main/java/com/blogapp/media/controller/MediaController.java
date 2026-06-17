@@ -2,6 +2,7 @@ package com.blogapp.media.controller;
 
 import com.blogapp.common.exception.BadRequestException;
 import com.blogapp.media.service.CloudinaryService;
+import com.blogapp.media.service.MinioService;
 import com.blogapp.otp.enums.OtpPurpose;
 import com.blogapp.otp.service.OtpService;
 import com.blogapp.user.entity.User;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Map;
 
@@ -26,7 +28,23 @@ import java.util.Map;
 public class MediaController {
 
     private final CloudinaryService cloudinaryService;
+    private final MinioService minioService;
     private final OtpService otpService;
+
+    @org.springframework.beans.factory.annotation.Value("${app.minio.max-file-size-mb:5}")
+    private long maxFileSizeMb;
+
+    @PostMapping("/minio/upload")
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Upload media to Minio", description = "Uploads an image/document to Minio and returns the public URL. Used for Ask Feature attachments.")
+    public ResponseEntity<Map<String, String>> uploadToMinio(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file.getSize() > maxFileSizeMb * 1024 * 1024) {
+            throw new BadRequestException("File size exceeds the configured maximum of " + maxFileSizeMb + " MB");
+        }
+        String url = minioService.uploadFile(file);
+        return ResponseEntity.ok(Map.of("url", url));
+    }
 
     @GetMapping("/signature")
     @Operation(summary = "Get secure Cloudinary upload signature",

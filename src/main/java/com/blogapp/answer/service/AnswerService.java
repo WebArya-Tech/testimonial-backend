@@ -15,5 +15,6 @@ public interface AnswerService {
     AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId);
     Page<AnswerResponse> getAllAnswers(AnswerStatus status, String questionId, int page, int size, String sort, String direction);
     AnswerResponse updateAnswerStatus(String id, AnswerStatus status, String rejectionReason);
+    AnswerResponse markAnswerCorrect(String id);
     void deleteAnswer(String id);
 }

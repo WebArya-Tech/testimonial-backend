@@ -35,6 +35,10 @@ public class Answer {
 
     private String rejectionReason;
 
+    private java.util.List<String> attachments; // Minio URLs
+    
+    private boolean isCorrect;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

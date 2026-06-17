@@ -18,14 +18,19 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    @Operation(summary = "Get all questions with optional category filter")
+    @Operation(summary = "Get all approved questions with optional filters")
     public ResponseEntity<Page<QuestionResponse>> getQuestions(
-            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String gradeId,
+            @RequestParam(required = false) String subjectId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction) {
-        return ResponseEntity.ok(questionService.getAllQuestions(categoryId, page, size, sort, direction));
+        
+        // Use OPEN_TO_ANSWER as default or let it be null. Actually public can see all APPROVED questions,
+        // which the service handles by forcing APPROVED. We can pass null for status to get all APPROVED questions (both OPEN and ANSWERED).
+        return ResponseEntity.ok(questionService.getAllQuestions(keyword, gradeId, subjectId, null, page, size, sort, direction));
     }
 
     @GetMapping("/{id}")

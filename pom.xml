@@ -110,6 +110,12 @@
 			<version>1.36.0</version>
 		</dependency>
 
+		<!-- Minio - Media Upload -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>8.5.10</version>
+		</dependency>
 
 
 		<!-- Test -->

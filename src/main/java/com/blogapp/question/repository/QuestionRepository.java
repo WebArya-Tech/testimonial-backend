@@ -9,8 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface QuestionRepository extends MongoRepository<Question, String> {
+public interface QuestionRepository extends MongoRepository<Question, String>, QuestionRepositoryCustom {
     Optional<Question> findBySlug(String slug);
     boolean existsBySlug(String slug);
-    Page<Question> findByCategoryId(String categoryId, Pageable pageable);
 }

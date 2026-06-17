@@ -10,4 +10,6 @@ public class AnswerRequest {
 
     @NotBlank(message = "Answer content cannot be empty")
     private String contentHtml;
+
+    private java.util.List<String> attachments;
 }

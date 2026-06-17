@@ -68,4 +68,10 @@ public class AdminAnswerController {
         answerService.deleteAnswer(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/correct")
+    @Operation(summary = "Mark an answer as correct (also updates question status to ANSWERED)")
+    public ResponseEntity<AnswerResponse> markAnswerCorrect(@PathVariable String id) {
+        return ResponseEntity.ok(answerService.markAnswerCorrect(id));
+    }
 }
