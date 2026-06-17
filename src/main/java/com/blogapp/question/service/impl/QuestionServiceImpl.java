@@ -104,6 +104,10 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionResponse getQuestionById(String id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+        
+        question.setViewsCount(question.getViewsCount() + 1);
+        questionRepository.save(question);
+        
         return mapToResponse(question);
     }
 
@@ -111,6 +115,10 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionResponse getQuestionBySlug(String slug) {
         Question question = questionRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+        
+        question.setViewsCount(question.getViewsCount() + 1);
+        questionRepository.save(question);
+        
         return mapToResponse(question);
     }
 
@@ -168,6 +176,8 @@ public class QuestionServiceImpl implements QuestionService {
                 .attachments(question.getAttachments())
                 .status(question.getStatus())
                 .approvalStatus(question.getApprovalStatus())
+                .viewsCount(question.getViewsCount())
+                .answersCount(question.getAnswersCount())
                 .adminId(question.getAdminId())
                 .createdAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())

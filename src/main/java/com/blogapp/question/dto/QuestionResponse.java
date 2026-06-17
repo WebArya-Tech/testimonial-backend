@@ -21,6 +21,8 @@ public class QuestionResponse {
     private java.util.List<String> attachments;
     private QuestionStatus status;
     private QuestionApprovalStatus approvalStatus;
+    private long viewsCount;
+    private long answersCount;
     private String adminId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

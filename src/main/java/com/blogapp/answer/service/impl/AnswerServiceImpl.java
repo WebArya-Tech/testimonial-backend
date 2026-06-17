@@ -100,6 +100,10 @@ public class AnswerServiceImpl implements AnswerService {
                 .build();
 
         Answer saved = answerRepository.save(answer);
+        
+        question.setAnswersCount(question.getAnswersCount() + 1);
+        questionRepository.save(question);
+        
         return mapToResponse(saved);
     }
 
@@ -134,6 +138,14 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setUpdatedAt(LocalDateTime.now());
 
         Answer saved = answerRepository.save(answer);
+
+        if (status == AnswerStatus.APPROVED) {
+            com.blogapp.question.entity.Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+            if (question != null) {
+                question.setAnswersCount(question.getAnswersCount() + 1);
+                questionRepository.save(question);
+            }
+        }
         return mapToResponse(saved);
     }
 

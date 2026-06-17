@@ -36,6 +36,9 @@ public class Question {
     private com.blogapp.question.enums.QuestionStatus status;
     private com.blogapp.question.enums.QuestionApprovalStatus approvalStatus;
     
+    private long viewsCount;
+    private long answersCount;
+    
     private String adminId; // Who posted it
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
