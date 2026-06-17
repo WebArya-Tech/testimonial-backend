@@ -28,6 +28,9 @@ public class MinioService {
     @Value("${app.minio.url}")
     private String minioUrl;
 
+    @Value("${app.minio.external-url}")
+    private String minioExternalUrl;
+
     @PostConstruct
     public void initBucket() {
         try {
@@ -75,7 +78,7 @@ public class MinioService {
                             .build()
             );
 
-            return minioUrl + "/" + bucketName + "/" + fileName;
+            return minioExternalUrl + "/" + bucketName + "/" + fileName;
 
         } catch (Exception e) {
             log.error("Failed to upload file to Minio", e);
