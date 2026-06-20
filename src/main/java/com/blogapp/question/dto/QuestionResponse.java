@@ -1,6 +1,9 @@
 package com.blogapp.question.dto;
 
-import com.blogapp.category.dto.CategoryResponse;
+import com.blogapp.question.entity.Grade;
+import com.blogapp.question.entity.Subject;
+import com.blogapp.question.enums.QuestionStatus;
+import com.blogapp.question.enums.QuestionApprovalStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,7 +16,13 @@ public class QuestionResponse {
     private String title;
     private String slug;
     private String descriptionHtml;
-    private CategoryResponse category;
+    private Grade grade;
+    private Subject subject;
+    private java.util.List<String> attachments;
+    private QuestionStatus status;
+    private QuestionApprovalStatus approvalStatus;
+    private long viewsCount;
+    private long answersCount;
     private String adminId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

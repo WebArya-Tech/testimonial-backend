@@ -32,19 +32,32 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public AnswerResponse submitAnswer(AnswerRequest request, String userId) {
-        if (!questionRepository.existsById(request.getQuestionId())) {
-            throw new ResourceNotFoundException("Question not found");
+        com.blogapp.question.entity.Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+
+        if (question.getStatus() == com.blogapp.question.enums.QuestionStatus.CLOSED || question.getStatus() == com.blogapp.question.enums.QuestionStatus.ANSWERED) {
+             throw new com.blogapp.common.exception.BadRequestException("This question is closed and cannot accept new answers.");
         }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!user.isEnrolled()) {
+            if (user.getFreeAskOrAnswerCount() >= 3) {
+                throw new com.blogapp.common.exception.BadRequestException("Free quota exceeded. Please submit a Lead Form to continue.");
+            }
+            user.setFreeAskOrAnswerCount(user.getFreeAskOrAnswerCount() + 1);
+            userRepository.save(user);
+        }
 
         Answer answer = Answer.builder()
                 .questionId(request.getQuestionId())
                 .userId(user.getId())
                 .authorName(user.getName())
                 .contentHtml(HtmlSanitizer.sanitize(request.getContentHtml()))
+                .attachments(request.getAttachments())
                 .status(AnswerStatus.PENDING)
+                .isCorrect(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -67,8 +80,11 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId) {
-        if (!questionRepository.existsById(request.getQuestionId())) {
-            throw new ResourceNotFoundException("Question not found");
+        com.blogapp.question.entity.Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+
+        if (question.getStatus() == com.blogapp.question.enums.QuestionStatus.CLOSED || question.getStatus() == com.blogapp.question.enums.QuestionStatus.ANSWERED) {
+             throw new com.blogapp.common.exception.BadRequestException("This question is closed and cannot accept new answers.");
         }
 
         Answer answer = Answer.builder()
@@ -76,12 +92,18 @@ public class AnswerServiceImpl implements AnswerService {
                 .userId(adminId)
                 .authorName("Admin")
                 .contentHtml(HtmlSanitizer.sanitize(request.getContentHtml()))
+                .attachments(request.getAttachments())
                 .status(AnswerStatus.APPROVED)
+                .isCorrect(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         Answer saved = answerRepository.save(answer);
+        
+        question.setAnswersCount(question.getAnswersCount() + 1);
+        questionRepository.save(question);
+        
         return mapToResponse(saved);
     }
 
@@ -116,6 +138,32 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setUpdatedAt(LocalDateTime.now());
 
         Answer saved = answerRepository.save(answer);
+
+        if (status == AnswerStatus.APPROVED) {
+            com.blogapp.question.entity.Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+            if (question != null) {
+                question.setAnswersCount(question.getAnswersCount() + 1);
+                questionRepository.save(question);
+            }
+        }
+        return mapToResponse(saved);
+    }
+
+    @Override
+    public AnswerResponse markAnswerCorrect(String id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+        answer.setCorrect(true);
+        answer.setUpdatedAt(LocalDateTime.now());
+        Answer saved = answerRepository.save(answer);
+
+        // Update Question status to ANSWERED
+        com.blogapp.question.entity.Question question = questionRepository.findById(answer.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+        question.setStatus(com.blogapp.question.enums.QuestionStatus.ANSWERED);
+        question.setUpdatedAt(LocalDateTime.now());
+        questionRepository.save(question);
+
         return mapToResponse(saved);
     }
 
@@ -134,7 +182,9 @@ public class AnswerServiceImpl implements AnswerService {
                 .userId(answer.getUserId())
                 .authorName(answer.getAuthorName())
                 .contentHtml(answer.getContentHtml())
+                .attachments(answer.getAttachments())
                 .status(answer.getStatus())
+                .isCorrect(answer.isCorrect())
                 .createdAt(answer.getCreatedAt())
                 .updatedAt(answer.getUpdatedAt())
                 .build();

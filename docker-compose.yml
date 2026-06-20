@@ -8,16 +8,13 @@ services:
     build: .
     container_name: astar-testimonial-ask-api-container
     ports:
-      - "9009:8080" # Host Port : Container Port
+      - "9009:8080"
     restart: always
     environment:
-      # Server Configuration
       - SERVER_PORT=8080
 
-      # MongoDB Configuration (From .env)
       - MONGODB_URI=${MONGODB_URI}
 
-      # Mail Configuration (From .env)
       - SPRING_MAIL_HOST=smtp.gmail.com
       - SPRING_MAIL_PORT=587
       - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
@@ -25,27 +22,56 @@ services:
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 
-      # Admin Credentials (From .env or defaults)
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
-      # Frontend URL
       - FRONTEND_URL=${FRONTEND_URL}
 
-      # JWT Configuration
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRY_HOURS=${JWT_EXPIRY_HOURS}
 
-      # Cloudinary Configuration
       - CLOUDINARY_URL=${CLOUDINARY_URL}
 
-    # Load environment variables from .env file
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - MINIO_MAX_FILE_SIZE_MB=${MINIO_MAX_FILE_SIZE_MB}
+
     env_file:
       - .env
 
-    # Healthcheck to ensure the app is running
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
+
+    depends_on:
+      - minio
+
+  # ==============================
+  # Minio Object Storage Service
+  # ==============================
+  minio:
+    image: minio/minio:latest
+    container_name: astar-minio
+    ports:
+      - "9005:9000"
+      - "9006:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  minio_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.250.0.0/24

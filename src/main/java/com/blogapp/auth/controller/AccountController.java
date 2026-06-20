@@ -91,4 +91,18 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @GetMapping("/quota-status")
+    @Operation(summary = "Check User Quota", description = "Checks if the logged in user is allowed to ask or answer a question")
+    public ResponseEntity<?> getQuotaStatus(@AuthenticationPrincipal Object principal) {
+        if (principal instanceof User user) {
+            User fullUser = userService.findById(user.getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            boolean allowed = fullUser.isEnrolled() || fullUser.getFreeAskOrAnswerCount() < 3;
+            return ResponseEntity.ok(Map.of("allowed", allowed, "message", allowed ? "Quota available" : "Free quota exceeded. Please submit a Lead Form to continue."));
+        } else if (principal instanceof Admin) {
+            return ResponseEntity.ok(Map.of("allowed", true, "message", "Admin always allowed"));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }

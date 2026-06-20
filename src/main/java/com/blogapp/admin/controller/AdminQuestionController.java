@@ -49,4 +49,16 @@ public class AdminQuestionController {
         questionService.deleteQuestion(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/approve")
+    @Operation(summary = "Approve or Reject a question")
+    public ResponseEntity<QuestionResponse> updateApprovalStatus(@PathVariable String id, @RequestParam com.blogapp.question.enums.QuestionApprovalStatus status) {
+        return ResponseEntity.ok(questionService.updateQuestionApproval(id, status));
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Change the question status (e.g. CLOSE)")
+    public ResponseEntity<QuestionResponse> updateStatus(@PathVariable String id, @RequestParam com.blogapp.question.enums.QuestionStatus status) {
+        return ResponseEntity.ok(questionService.updateQuestionStatus(id, status));
+    }
 }

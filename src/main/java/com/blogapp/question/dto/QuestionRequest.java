@@ -11,6 +11,11 @@ public class QuestionRequest {
     @NotBlank(message = "Description is required")
     private String descriptionHtml;
 
-    @NotBlank(message = "Category ID is required")
-    private String categoryId;
+    @NotBlank(message = "Grade ID is required")
+    private String gradeId;
+
+    @NotBlank(message = "Subject ID is required")
+    private String subjectId;
+
+    private java.util.List<String> attachments;
 }

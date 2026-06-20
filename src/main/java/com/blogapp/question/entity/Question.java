@@ -26,7 +26,18 @@ public class Question {
     private String descriptionHtml;
     
     @Indexed
-    private String categoryId;
+    private String gradeId;
+    
+    @Indexed
+    private String subjectId;
+
+    private java.util.List<String> attachments; // Minio URLs
+
+    private com.blogapp.question.enums.QuestionStatus status;
+    private com.blogapp.question.enums.QuestionApprovalStatus approvalStatus;
+    
+    private long viewsCount;
+    private long answersCount;
     
     private String adminId; // Who posted it
     private LocalDateTime createdAt;
