@@ -10,6 +10,7 @@ import java.util.List;
 public interface AnswerService {
     AnswerResponse submitAnswer(AnswerRequest request, String userId);
     List<AnswerResponse> getApprovedAnswersByQuestionId(String questionId);
+    Page<AnswerResponse> getUserAnswers(String userId, int page, int size, String sort, String direction);
     
     // Admin methods
     AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId);

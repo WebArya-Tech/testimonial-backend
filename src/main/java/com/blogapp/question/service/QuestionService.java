@@ -11,6 +11,7 @@ public interface QuestionService {
     QuestionResponse getQuestionById(String id);
     QuestionResponse getQuestionBySlug(String slug);
     Page<QuestionResponse> getAllQuestions(String keyword, String gradeId, String subjectId, com.blogapp.question.enums.QuestionStatus status, int page, int size, String sort, String direction);
+    Page<QuestionResponse> getUserQuestions(String userId, int page, int size, String sort, String direction);
     
     QuestionResponse updateQuestionStatus(String id, com.blogapp.question.enums.QuestionStatus status);
     QuestionResponse updateQuestionApproval(String id, com.blogapp.question.enums.QuestionApprovalStatus approvalStatus);

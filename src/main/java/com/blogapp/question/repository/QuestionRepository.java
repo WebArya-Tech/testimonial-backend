@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface QuestionRepository extends MongoRepository<Question, String>, QuestionRepositoryCustom {
     Optional<Question> findBySlug(String slug);
     boolean existsBySlug(String slug);
+    Page<Question> findByAdminId(String adminId, Pageable pageable);
 }

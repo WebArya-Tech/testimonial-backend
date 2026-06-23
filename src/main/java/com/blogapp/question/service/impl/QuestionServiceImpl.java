@@ -139,6 +139,15 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Page<QuestionResponse> getUserQuestions(String userId, int page, int size, String sort, String direction) {
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
+        
+        Page<Question> questionsPage = questionRepository.findByAdminId(userId, pageable);
+        return questionsPage.map(this::mapToResponse);
+    }
+
+    @Override
     public QuestionResponse updateQuestionStatus(String id, QuestionStatus status) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
