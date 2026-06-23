@@ -11,4 +11,8 @@ public interface BlogSubscriptionService {
     void unsubscribe(String email);
 
     void notifySubscribersAsync(BlogPost post);
+
+    com.blogapp.common.dto.PageResponse<com.blogapp.blog.dto.response.BlogSubscriberResponse> getAllSubscribers(int page, int size);
+
+    void deleteSubscriber(String id);
 }

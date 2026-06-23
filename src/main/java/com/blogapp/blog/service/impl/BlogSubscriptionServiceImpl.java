@@ -126,4 +126,38 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
             }
         });
     }
+
+    @Override
+    public com.blogapp.common.dto.PageResponse<com.blogapp.blog.dto.response.BlogSubscriberResponse> getAllSubscribers(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        org.springframework.data.domain.Page<BlogSubscription> subscriberPage = subscriptionRepository.findAll(pageable);
+
+        java.util.List<com.blogapp.blog.dto.response.BlogSubscriberResponse> content = subscriberPage.getContent().stream()
+                .map(sub -> com.blogapp.blog.dto.response.BlogSubscriberResponse.builder()
+                        .id(sub.getId())
+                        .email(sub.getEmail())
+                        .isActive(sub.isActive())
+                        .createdAt(sub.getCreatedAt())
+                        .updatedAt(sub.getUpdatedAt())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+
+        return com.blogapp.common.dto.PageResponse.<com.blogapp.blog.dto.response.BlogSubscriberResponse>builder()
+                .content(content)
+                .page(subscriberPage.getNumber())
+                .size(subscriberPage.getSize())
+                .totalElements(subscriberPage.getTotalElements())
+                .totalPages(subscriberPage.getTotalPages())
+                .first(subscriberPage.isFirst())
+                .last(subscriberPage.isLast())
+                .build();
+    }
+
+    @Override
+    public void deleteSubscriber(String id) {
+        BlogSubscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new com.blogapp.common.exception.ResourceNotFoundException("Subscriber", "id", id));
+        subscriptionRepository.delete(subscription);
+        log.info("Deleted blog subscriber with id: {}", id);
+    }
 }
