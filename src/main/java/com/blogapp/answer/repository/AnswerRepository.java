@@ -14,4 +14,5 @@ public interface AnswerRepository extends MongoRepository<Answer, String> {
     List<Answer> findByQuestionIdAndStatus(String questionId, AnswerStatus status);
     Page<Answer> findByStatus(AnswerStatus status, Pageable pageable);
     Page<Answer> findByQuestionId(String questionId, Pageable pageable);
+    Page<Answer> findByUserId(String userId, Pageable pageable);
 }

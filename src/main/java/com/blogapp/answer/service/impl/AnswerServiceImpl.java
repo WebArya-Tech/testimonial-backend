@@ -79,6 +79,15 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    public Page<AnswerResponse> getUserAnswers(String userId, int page, int size, String sort, String direction) {
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
+
+        Page<Answer> answersPage = answerRepository.findByUserId(userId, pageable);
+        return answersPage.map(this::mapToResponse);
+    }
+
+    @Override
     public AnswerResponse submitAdminAnswer(AnswerRequest request, String adminId) {
         com.blogapp.question.entity.Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
