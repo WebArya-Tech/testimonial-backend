@@ -63,7 +63,7 @@ public class AccountController {
             User fullUser = userService.findById(user.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (fullUser.getPassword() != null) {
+            if (fullUser.getPassword() != null && !fullUser.getPassword().isBlank()) {
                 if (request.getOldPassword() == null || request.getOldPassword().isBlank() || !passwordEncoder.matches(request.getOldPassword(), fullUser.getPassword())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(Map.of("message", "Incorrect old password"));
@@ -77,7 +77,7 @@ public class AccountController {
             Admin fullAdmin = adminRepository.findById(admin.getId())
                     .orElseThrow(() -> new RuntimeException("Admin not found"));
                     
-            if (fullAdmin.getPassword() != null) {
+            if (fullAdmin.getPassword() != null && !fullAdmin.getPassword().isBlank()) {
                 if (request.getOldPassword() == null || request.getOldPassword().isBlank() || !passwordEncoder.matches(request.getOldPassword(), fullAdmin.getPassword())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(Map.of("message", "Incorrect old password"));

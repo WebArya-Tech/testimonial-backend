@@ -1,4 +1,4 @@
-package com.blogapp.config;
+package com.blogapp.migration;
 
 import com.blogapp.admin.entity.Admin;
 import com.blogapp.admin.repository.AdminRepository;
@@ -17,34 +17,32 @@ import com.blogapp.testimonial.entity.Testimonial;
 import com.blogapp.testimonial.repository.TestimonialRepository;
 import com.blogapp.user.entity.User;
 import com.blogapp.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
-public class DataInitializer implements CommandLineRunner {
+@ChangeUnit(id = "init-data", order = "001", author = "system")
+public class DatabaseChangeLog {
 
-    private final TeacherRepository teacherRepository;
-    private final TestimonialRepository testimonialRepository;
-    private final UserRepository userRepository;
-    private final BoardRepository boardRepository;
-    private final GradeRepository gradeRepository;
-    private final ContactSubjectRepository contactSubjectRepository;
-    private final BlogPostRepository blogPostRepository;
-    private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public void run(String... args) {
-        log.info("Checking database state for initialization...");
+    @Execution
+    public void execute(TeacherRepository teacherRepository,
+                        TestimonialRepository testimonialRepository,
+                        UserRepository userRepository,
+                        BoardRepository boardRepository,
+                        GradeRepository gradeRepository,
+                        ContactSubjectRepository contactSubjectRepository,
+                        BlogPostRepository blogPostRepository,
+                        AdminRepository adminRepository,
+                        PasswordEncoder passwordEncoder) {
+        
+        log.info("Starting Mongock data initialization migration...");
 
         // ── Teachers ──
         if (teacherRepository.count() == 0) {
@@ -54,12 +52,10 @@ public class DataInitializer implements CommandLineRunner {
 
             // ── Testimonials (Depend on Teachers) ──
             if (testimonialRepository.count() == 0) {
-                List<Testimonial> testimonials = createSampleTestimonials(teachers);
+                List<Testimonial> testimonials = createSampleTestimonials();
                 testimonialRepository.saveAll(testimonials);
                 log.info("Created {} sample testimonials", testimonials.size());
             }
-        } else {
-            log.info("Teachers/Testimonials collection already has data. Skipping.");
         }
 
         // ── Users ──
@@ -67,8 +63,6 @@ public class DataInitializer implements CommandLineRunner {
             List<User> users = createSampleUsers();
             userRepository.saveAll(users);
             log.info("Created {} sample users", users.size());
-        } else {
-            log.info("Users collection already has data. Skipping.");
         }
 
         // ── Boards ──
@@ -82,8 +76,6 @@ public class DataInitializer implements CommandLineRunner {
             );
             boardRepository.saveAll(boards);
             log.info("Created {} sample boards", boards.size());
-        } else {
-            log.info("Boards collection already has data. Skipping.");
         }
 
         // ── Grades ──
@@ -99,8 +91,6 @@ public class DataInitializer implements CommandLineRunner {
             );
             gradeRepository.saveAll(grades);
             log.info("Created {} sample grades", grades.size());
-        } else {
-            log.info("Grades collection already has data. Skipping.");
         }
 
         // ── Contact Subjects ──
@@ -114,8 +104,6 @@ public class DataInitializer implements CommandLineRunner {
             );
             contactSubjectRepository.saveAll(subjects);
             log.info("Created {} sample contact subjects", subjects.size());
-        } else {
-            log.info("Contact Subjects collection already has data. Skipping.");
         }
 
         // ── Blogs ──
@@ -123,8 +111,6 @@ public class DataInitializer implements CommandLineRunner {
             List<BlogPost> blogs = createSampleBlogs();
             blogPostRepository.saveAll(blogs);
             log.info("Created {} sample blogs", blogs.size());
-        } else {
-            log.info("Blogs collection already has data. Skipping.");
         }
 
         // ── Admin ──
@@ -136,11 +122,14 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             adminRepository.save(admin);
             log.info("Created primary admin: admin@astarclasses.com / admin123");
-        } else {
-            log.info("Admin collection already has data. Skipping.");
         }
 
         log.info("Database initialization completed successfully!");
+    }
+
+    @RollbackExecution
+    public void rollback() {
+        log.warn("Rollback triggered for init-data. No-op for this migration.");
     }
 
     private List<Teacher> createSampleTeachers() {
@@ -180,7 +169,7 @@ public class DataInitializer implements CommandLineRunner {
         );
     }
 
-    private List<Testimonial> createSampleTestimonials(List<Teacher> teachers) {
+    private List<Testimonial> createSampleTestimonials() {
         return Arrays.asList(
                 // TEXT review — approved & primary
                 Testimonial.builder()
@@ -227,12 +216,14 @@ public class DataInitializer implements CommandLineRunner {
                 User.builder()
                         .name("Alice Viewer")
                         .email("alice@example.com")
+                        // No default password assigned here, adhering to new requirements
                         .emailVerifiedAt(LocalDateTime.now())
                         .createdAt(LocalDateTime.now())
                         .build(),
                 User.builder()
                         .name("Bob Student")
                         .email("bob@example.com")
+                        // No default password assigned here, adhering to new requirements
                         .emailVerifiedAt(LocalDateTime.now())
                         .createdAt(LocalDateTime.now())
                         .build()
