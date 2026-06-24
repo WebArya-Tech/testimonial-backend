@@ -117,6 +117,17 @@
 			<version>8.5.10</version>
 		</dependency>
 
+		<!-- Mongock for Schema Migrations -->
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongock-springboot-v3</artifactId>
+			<version>5.3.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongodb-springdata-v4-driver</artifactId>
+			<version>5.3.6</version>
+		</dependency>
 
 		<!-- Test -->
 		<dependency>
