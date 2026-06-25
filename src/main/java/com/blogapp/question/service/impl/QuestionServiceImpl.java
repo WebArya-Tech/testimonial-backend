@@ -48,6 +48,13 @@ public class QuestionServiceImpl implements QuestionService {
             userRepository.save(user);
         }
 
+        boolean hasDescription = request.getDescriptionHtml() != null && !request.getDescriptionHtml().trim().isEmpty();
+        boolean hasAttachments = request.getAttachments() != null && !request.getAttachments().isEmpty();
+
+        if (!hasDescription && !hasAttachments) {
+            throw new BadRequestException("Please provide either a question description or upload an attachment.");
+        }
+
         String slug = SlugUtil.generateSlug(request.getTitle());
         if (questionRepository.existsBySlug(slug)) {
             slug = slug + "-" + System.currentTimeMillis();
@@ -75,6 +82,13 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionResponse updateQuestion(String id, QuestionRequest request, String adminId) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+
+        boolean hasDescription = request.getDescriptionHtml() != null && !request.getDescriptionHtml().trim().isEmpty();
+        boolean hasAttachments = request.getAttachments() != null && !request.getAttachments().isEmpty();
+
+        if (!hasDescription && !hasAttachments) {
+            throw new BadRequestException("Please provide either a question description or upload an attachment.");
+        }
 
         question.setTitle(request.getTitle());
         String newSlug = SlugUtil.generateSlug(request.getTitle());
