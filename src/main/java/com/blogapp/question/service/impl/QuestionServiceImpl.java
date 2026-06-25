@@ -79,6 +79,38 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public QuestionResponse createAdminQuestion(QuestionRequest request, String adminId) {
+        boolean hasDescription = request.getDescriptionHtml() != null && !request.getDescriptionHtml().trim().isEmpty();
+        boolean hasAttachments = request.getAttachments() != null && !request.getAttachments().isEmpty();
+
+        if (!hasDescription && !hasAttachments) {
+            throw new BadRequestException("Please provide either a question description or upload an attachment.");
+        }
+
+        String slug = SlugUtil.generateSlug(request.getTitle());
+        if (questionRepository.existsBySlug(slug)) {
+            slug = slug + "-" + System.currentTimeMillis();
+        }
+
+        Question question = Question.builder()
+                .title(request.getTitle())
+                .slug(slug)
+                .descriptionHtml(HtmlSanitizer.sanitize(request.getDescriptionHtml()))
+                .gradeId(request.getGradeId())
+                .subjectId(request.getSubjectId())
+                .attachments(request.getAttachments())
+                .status(QuestionStatus.OPEN_TO_ANSWER)
+                .approvalStatus(QuestionApprovalStatus.APPROVED) // Auto-approve for admins
+                .adminId(adminId)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Question saved = questionRepository.save(question);
+        return mapToResponse(saved);
+    }
+
+    @Override
     public QuestionResponse updateQuestion(String id, QuestionRequest request, String adminId) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
@@ -198,6 +230,21 @@ public class QuestionServiceImpl implements QuestionService {
             subject = subjectRepository.findById(question.getSubjectId()).orElse(null);
         }
 
+        com.blogapp.common.dto.AuthorDTO author = null;
+        if (question.getAdminId() != null) {
+            author = userRepository.findById(question.getAdminId())
+                    .map(u -> com.blogapp.common.dto.AuthorDTO.builder()
+                            .id(u.getId())
+                            .name(u.getName())
+                            .role("STUDENT")
+                            .build())
+                    .orElseGet(() -> com.blogapp.common.dto.AuthorDTO.builder()
+                            .id(question.getAdminId())
+                            .name("Admin")
+                            .role("ADMIN")
+                            .build());
+        }
+
         return QuestionResponse.builder()
                 .id(question.getId())
                 .title(question.getTitle())
@@ -210,7 +257,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .approvalStatus(question.getApprovalStatus())
                 .viewsCount(question.getViewsCount())
                 .answersCount(question.getAnswersCount())
-                .adminId(question.getAdminId())
+                .author(author)
                 .createdAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())
                 .build();
