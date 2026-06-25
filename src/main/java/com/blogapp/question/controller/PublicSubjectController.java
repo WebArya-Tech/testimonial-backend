@@ -5,6 +5,7 @@ import com.blogapp.question.repository.SubjectRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +27,11 @@ public class PublicSubjectController {
     @Operation(summary = "Get all subjects, optionally filtered by gradeId")
     public ResponseEntity<List<Subject>> getSubjects(@RequestParam(required = false) String gradeId) {
         List<Subject> subjects;
+        Sort sort = Sort.by(Sort.Direction.ASC, "order");
         if (gradeId != null && !gradeId.trim().isEmpty()) {
-            subjects = subjectRepository.findByGradeId(gradeId);
+            subjects = subjectRepository.findByGradeId(gradeId, sort);
         } else {
-            subjects = subjectRepository.findAll();
+            subjects = subjectRepository.findAll(sort);
         }
         return ResponseEntity.ok(subjects);
     }
