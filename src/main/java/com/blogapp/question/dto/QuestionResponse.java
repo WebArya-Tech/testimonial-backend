@@ -23,7 +23,7 @@ public class QuestionResponse {
     private QuestionApprovalStatus approvalStatus;
     private long viewsCount;
     private long answersCount;
-    private String adminId;
+    private com.blogapp.common.dto.AuthorDTO author;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

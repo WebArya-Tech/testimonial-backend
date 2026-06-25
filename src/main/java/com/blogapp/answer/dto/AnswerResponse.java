@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 public class AnswerResponse {
     private String id;
     private String questionId;
-    private String userId;
-    private String authorName;
+    private com.blogapp.common.dto.AuthorDTO author;
     private String contentHtml;
     private AnswerStatus status;
     private java.util.List<String> attachments;

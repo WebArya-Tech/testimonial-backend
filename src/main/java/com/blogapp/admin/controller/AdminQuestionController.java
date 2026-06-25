@@ -45,7 +45,7 @@ public class AdminQuestionController {
     public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest request, 
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.blogapp.admin.entity.Admin admin) {
         String adminId = admin != null ? admin.getId() : "admin";
-        return new ResponseEntity<>(questionService.createQuestion(request, adminId), HttpStatus.CREATED);
+        return new ResponseEntity<>(questionService.createAdminQuestion(request, adminId), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

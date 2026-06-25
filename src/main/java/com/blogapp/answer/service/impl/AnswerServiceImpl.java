@@ -185,11 +185,25 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private AnswerResponse mapToResponse(Answer answer) {
+        com.blogapp.common.dto.AuthorDTO author = null;
+        if (answer.getUserId() != null) {
+            author = userRepository.findById(answer.getUserId())
+                    .map(u -> com.blogapp.common.dto.AuthorDTO.builder()
+                            .id(u.getId())
+                            .name(u.getName())
+                            .role("STUDENT")
+                            .build())
+                    .orElseGet(() -> com.blogapp.common.dto.AuthorDTO.builder()
+                            .id(answer.getUserId())
+                            .name(answer.getAuthorName() != null ? answer.getAuthorName() : "Admin")
+                            .role("ADMIN")
+                            .build());
+        }
+
         return AnswerResponse.builder()
                 .id(answer.getId())
                 .questionId(answer.getQuestionId())
-                .userId(answer.getUserId())
-                .authorName(answer.getAuthorName())
+                .author(author)
                 .contentHtml(answer.getContentHtml())
                 .attachments(answer.getAttachments())
                 .status(answer.getStatus())

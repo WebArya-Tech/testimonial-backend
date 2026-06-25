@@ -6,6 +6,9 @@ import org.springframework.data.domain.Page;
 
 public interface QuestionService {
     QuestionResponse createQuestion(QuestionRequest request, String userId);
+    
+    QuestionResponse createAdminQuestion(QuestionRequest request, String adminId);
+
     QuestionResponse updateQuestion(String id, QuestionRequest request, String adminId);
     void deleteQuestion(String id);
     QuestionResponse getQuestionById(String id);
