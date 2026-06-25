@@ -25,6 +25,21 @@ public class AdminQuestionController {
 
     private final QuestionService questionService;
 
+    @GetMapping
+    @Operation(summary = "Get all questions with optional filters")
+    public ResponseEntity<org.springframework.data.domain.Page<QuestionResponse>> getAllQuestions(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String gradeId,
+            @RequestParam(required = false) String subjectId,
+            @RequestParam(required = false) com.blogapp.question.enums.QuestionStatus status,
+            @RequestParam(required = false) com.blogapp.question.enums.QuestionApprovalStatus approvalStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction) {
+        return ResponseEntity.ok(questionService.getAllQuestionsForAdmin(keyword, gradeId, subjectId, status, approvalStatus, page, size, sort, direction));
+    }
+
     @PostMapping
     @Operation(summary = "Create a new question")
     public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest request, 

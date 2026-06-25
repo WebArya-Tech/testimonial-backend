@@ -139,6 +139,15 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Page<QuestionResponse> getAllQuestionsForAdmin(String keyword, String gradeId, String subjectId, QuestionStatus status, QuestionApprovalStatus approvalStatus, int page, int size, String sort, String direction) {
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
+        
+        Page<Question> questionsPage = questionRepository.searchQuestions(keyword, gradeId, subjectId, status, approvalStatus, pageable);
+        return questionsPage.map(this::mapToResponse);
+    }
+
+    @Override
     public Page<QuestionResponse> getUserQuestions(String userId, int page, int size, String sort, String direction) {
         Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
