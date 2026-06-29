@@ -29,6 +29,9 @@ public class AdminBlogController {
     private final BlogMapper blogMapper;
     private final EmailService emailService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url:}")
+    private String frontendUrl;
+
     @GetMapping
     @Operation(summary = "Get blogs by status", description = "List blogs filtered by status (PENDING, PUBLISHED, REJECTED, DRAFT). "
             + "If no status is provided, returns all blogs.")
@@ -61,7 +64,8 @@ public class AdminBlogController {
         BlogPost approvedBlog = blogService.approveBlog(id, adminId);
 
         // Send approval email
-        String blogLink = "https://yourfrontend.com/blog/" + approvedBlog.getSlug(); // Placeholder full URL
+        String cleanFrontendUrl = frontendUrl.endsWith("/") ? frontendUrl.substring(0, frontendUrl.length() - 1) : frontendUrl;
+        String blogLink = cleanFrontendUrl + "/blog/" + approvedBlog.getSlug();
         emailService.sendBlogApprovalEmail(approvedBlog.getAuthorEmail(),
                 approvedBlog.getTitle(), blogLink);
 

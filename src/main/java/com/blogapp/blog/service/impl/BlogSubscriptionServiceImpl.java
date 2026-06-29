@@ -111,7 +111,7 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
                 
                 // Construct the link depending on how the frontend handles blog detail slugs
                 String cleanFrontendUrl = frontendUrl.endsWith("/") ? frontendUrl.substring(0, frontendUrl.length() - 1) : frontendUrl;
-                String blogLink = cleanFrontendUrl + "/blogs/" + post.getSlug();
+                String blogLink = cleanFrontendUrl + "/blog/" + post.getSlug();
 
                 for (BlogSubscription subscriber : activeSubscribers) {
                     try {

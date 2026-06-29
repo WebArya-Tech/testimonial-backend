@@ -35,6 +35,7 @@ public class OtpServiceImpl implements OtpService {
     @Value("${app.otp.resend-cooldown-seconds:60}")
     private int resendCooldownSeconds;
 
+    @org.springframework.transaction.annotation.Transactional
     @Override
     public boolean sendOtp(String email, OtpPurpose purpose, boolean isResend) {
         // Check existing OTPs
@@ -97,7 +98,7 @@ public class OtpServiceImpl implements OtpService {
         OtpVerification otpRecord = otpRepository
                 .findTopByEmailAndPurposeOrderByCreatedAtDesc(email, purpose)
                 .orElseThrow(
-                        () -> new OtpVerificationException("No OTP found for this email. Please request a new one."));
+                        () -> new OtpVerificationException("No OTP was requested for this email."));
 
         // Check if already verified
         if (otpRecord.getVerifiedAt() != null) {
@@ -106,7 +107,7 @@ public class OtpServiceImpl implements OtpService {
 
         // Check expiry
         if (LocalDateTime.now().isAfter(otpRecord.getExpiresAt())) {
-            throw new OtpVerificationException("OTP has expired. Please request a new one.");
+            throw new OtpVerificationException("This OTP has expired. Please request a new one.");
         }
 
         // Check max attempts
@@ -120,8 +121,7 @@ public class OtpServiceImpl implements OtpService {
         // Verify OTP
         if (!OtpUtil.verifyOtp(otp, otpRecord.getOtpHash())) {
             otpRepository.save(otpRecord);
-            int remaining = maxAttempts - otpRecord.getAttemptsCount();
-            throw new OtpVerificationException("Invalid OTP. " + remaining + " attempts remaining.");
+            throw new OtpVerificationException("Invalid OTP. Please try again.");
         }
 
         // Mark as verified

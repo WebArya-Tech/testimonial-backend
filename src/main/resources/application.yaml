@@ -77,7 +77,7 @@ app:
     max-file-size-mb: ${MINIO_MAX_FILE_SIZE_MB:5}
   blog:
     notifications:
-      enabled: ${BLOG_NOTIFICATIONS_ENABLED:false}
+      enabled: ${BLOG_NOTIFICATIONS_ENABLED:true}
 
 # Actuator config
 management:
