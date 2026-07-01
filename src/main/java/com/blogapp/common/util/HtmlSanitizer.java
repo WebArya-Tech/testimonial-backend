@@ -27,7 +27,7 @@ public final class HtmlSanitizer {
                 .addAttributes("pre", "class")
                 .addAttributes(":all", "style")
                 .addProtocols("a", "href", "http", "https", "mailto")
-                .addProtocols("img", "src", "http", "https");
+                .addProtocols("img", "src", "http", "https", "data");
 
         return Jsoup.clean(html, safelist);
     }

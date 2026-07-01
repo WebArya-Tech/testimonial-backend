@@ -23,7 +23,7 @@ public class PublicContactController {
     private final ContactSettingsService settingsService;
     private final ContactMessageService messageService;
 
-    @GetMapping("/subjects")
+    @GetMapping({"/subjects", "/settings"})
     @Operation(summary = "Get all active subjects for the contact dropdown")
     public ResponseEntity<List<SubjectResponse>> getAllSubjects() {
         return ResponseEntity.ok(settingsService.getAllSubjects());

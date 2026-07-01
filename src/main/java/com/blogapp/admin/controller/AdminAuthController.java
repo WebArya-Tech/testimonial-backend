@@ -65,8 +65,8 @@ public class AdminAuthController {
 
         if (!adminRepository.existsByEmail(request.getEmail())) {
             log.warn("Forgot-password requested for non-existent admin email: {}", request.getEmail());
-            // Return OK anyway to prevent email enumeration
-            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No account found with this email."));
         }
 
         boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.ADMIN_PASSWORD_RESET, request.isResend());
@@ -84,16 +84,12 @@ public class AdminAuthController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody AdminResetPasswordRequest request) {
         log.info("Received admin reset-password request for email: {}", request.getEmail());
 
-        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.ADMIN_PASSWORD_RESET);
-        if (!isValid) {
-            log.warn("Invalid OTP attempt for admin password reset: {}", request.getEmail());
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
-        }
+        otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.ADMIN_PASSWORD_RESET);
 
         Admin admin = adminRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
                     log.error("OTP verified but admin not found in DB for email: {}", request.getEmail());
-                    return new RuntimeException("Admin not found");
+                    return new com.blogapp.common.exception.BadRequestException("Admin not found");
                 });
 
         admin.setPassword(passwordEncoder.encode(request.getNewPassword()));
@@ -121,13 +117,10 @@ public class AdminAuthController {
     @PostMapping("/login-otp/verify")
     @Operation(summary = "Verify OTP to login admin")
     public ResponseEntity<?> verifyLoginOtp(@Valid @RequestBody com.blogapp.admin.dto.request.AdminVerifyOtpLoginRequest request) {
-        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.ADMIN_LOGIN);
-        if (!isValid) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
-        }
+        otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.ADMIN_LOGIN);
 
         Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                .orElseThrow(() -> new com.blogapp.common.exception.BadRequestException("Admin not found"));
 
         String token = jwtTokenProvider.generateToken(admin.getId(), admin.getEmail(), "ROLE_ADMIN");
 

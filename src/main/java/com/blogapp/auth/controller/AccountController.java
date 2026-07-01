@@ -40,6 +40,7 @@ public class AccountController {
                     .email(user.getEmail())
                     .name(user.getName())
                     .emailVerified(user.getEmailVerifiedAt() != null)
+                    .isEnrolled(user.isEnrolled())
                     .build();
             return ResponseEntity.ok(userInfo);
         } else if (principal instanceof Admin admin) {
@@ -48,6 +49,7 @@ public class AccountController {
                     .email(admin.getEmail())
                     .name("Admin")
                     .emailVerified(true)
+                    .isEnrolled(true)
                     .build();
             return ResponseEntity.ok(userInfo);
         }

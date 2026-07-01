@@ -204,6 +204,7 @@ public class AnswerServiceImpl implements AnswerService {
                 .id(answer.getId())
                 .questionId(answer.getQuestionId())
                 .author(author)
+                .description(answer.getContentHtml())
                 .contentHtml(answer.getContentHtml())
                 .attachments(answer.getAttachments())
                 .status(answer.getStatus())

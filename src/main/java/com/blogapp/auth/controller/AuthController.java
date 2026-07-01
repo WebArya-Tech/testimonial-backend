@@ -57,6 +57,7 @@ public class AuthController {
                                     .email(user.getEmail())
                                     .name(user.getName())
                                     .emailVerified(user.getEmailVerifiedAt() != null)
+                                    .isEnrolled(user.isEnrolled())
                                     .build())
                             .build();
                     return ResponseEntity.ok((Object) response);
@@ -74,16 +75,16 @@ public class AuthController {
         log.info("Received forgot-password request for email: {}", request.getEmail());
 
         if (userService.findByEmail(request.getEmail()).isEmpty()) {
-            // Prevent email enumeration
-            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No account found with this email."));
         }
 
         boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_PASSWORD_RESET, request.isResend());
         if (!sent) {
-            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
+            return ResponseEntity.ok(Map.of("message", "An OTP was already sent recently. Please check your email."));
         }
 
-        return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+        return ResponseEntity.ok(Map.of("message", "An OTP has been sent to your email."));
     }
 
     @PostMapping("/reset-password")
@@ -91,14 +92,10 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request) {
         log.info("Received reset-password request for email: {}", request.getEmail());
 
-        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.USER_PASSWORD_RESET);
-        if (!isValid) {
-            log.warn("Invalid OTP attempt for password reset: {}", request.getEmail());
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
-        }
+        otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.USER_PASSWORD_RESET);
 
         User user = userService.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.blogapp.common.exception.BadRequestException("User not found"));
 
         userService.updatePassword(user.getId(), passwordEncoder.encode(request.getNewPassword()));
 
@@ -131,13 +128,8 @@ public class AuthController {
             @Valid @RequestBody AuthVerifyRequest request) {
         log.info("Received OTP verification request for email: {}", request.getEmail());
 
-        boolean valid = otpService.verifyOtp(
+        otpService.verifyOtp(
                 request.getEmail(), request.getOtp(), OtpPurpose.USER_LOGIN);
-
-        if (!valid) {
-            log.warn("Invalid OTP attempt for email: {}", request.getEmail());
-            return ResponseEntity.badRequest().build();
-        }
 
         log.info("OTP verified successfully for email: {}. Generating session token.", request.getEmail());
 
@@ -160,6 +152,7 @@ public class AuthController {
                         .email(user.getEmail())
                         .name(user.getName())
                         .emailVerified(true)
+                        .isEnrolled(user.isEnrolled())
                         .build())
                 .build();
 

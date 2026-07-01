@@ -249,6 +249,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .id(question.getId())
                 .title(question.getTitle())
                 .slug(question.getSlug())
+                .description(question.getDescriptionHtml())
                 .descriptionHtml(question.getDescriptionHtml())
                 .grade(grade)
                 .subject(subject)

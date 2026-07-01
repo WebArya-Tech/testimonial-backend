@@ -37,5 +37,8 @@ public class AuthResponse {
 
         @Schema(example = "true")
         private boolean emailVerified;
+
+        @Schema(example = "true")
+        private boolean isEnrolled;
     }
 }

@@ -92,9 +92,10 @@ public class EmailService {
             <h2>🎉 Congratulations!</h2>
             <p>Your blog post <strong>%s</strong> has been reviewed and approved by an administrator.</p>
             <p>It is now live on our platform!</p>
+            <p>Read it here: <a href="%s">%s</a></p>
         </body>
         </html>
-        """.formatted(blogTitle);
+        """.formatted(blogTitle, blogLink, blogLink);
     sendEmail(to, subject, body);
   }
 

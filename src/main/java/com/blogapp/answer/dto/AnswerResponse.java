@@ -12,6 +12,7 @@ public class AnswerResponse {
     private String id;
     private String questionId;
     private com.blogapp.common.dto.AuthorDTO author;
+    private String description;
     private String contentHtml;
     private AnswerStatus status;
     private java.util.List<String> attachments;
