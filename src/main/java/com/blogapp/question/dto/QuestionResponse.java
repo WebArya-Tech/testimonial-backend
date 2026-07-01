@@ -15,6 +15,7 @@ public class QuestionResponse {
     private String id;
     private String title;
     private String slug;
+    private String description;
     private String descriptionHtml;
     private Grade grade;
     private Subject subject;

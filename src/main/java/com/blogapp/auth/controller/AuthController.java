@@ -57,6 +57,7 @@ public class AuthController {
                                     .email(user.getEmail())
                                     .name(user.getName())
                                     .emailVerified(user.getEmailVerifiedAt() != null)
+                                    .isEnrolled(user.isEnrolled())
                                     .build())
                             .build();
                     return ResponseEntity.ok((Object) response);
@@ -80,10 +81,10 @@ public class AuthController {
 
         boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_PASSWORD_RESET, request.isResend());
         if (!sent) {
-            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
+            return ResponseEntity.ok(Map.of("message", "An OTP was already sent recently. Please check your email."));
         }
 
-        return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+        return ResponseEntity.ok(Map.of("message", "An OTP has been sent to your email."));
     }
 
     @PostMapping("/reset-password")
@@ -151,6 +152,7 @@ public class AuthController {
                         .email(user.getEmail())
                         .name(user.getName())
                         .emailVerified(true)
+                        .isEnrolled(user.isEnrolled())
                         .build())
                 .build();
 
